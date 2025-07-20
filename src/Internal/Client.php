@@ -6,16 +6,18 @@ namespace HelgeSverre\ClaudeCode\Internal;
 
 use Generator;
 use HelgeSverre\ClaudeCode\Contracts\TransportInterface;
-use HelgeSverre\ClaudeCode\Internal\Transport\ProcessBridge;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\Message;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 class Client
 {
     /**
      * Process a query and yield messages as they arrive
      *
-     * @return Generator<Message>
+     * @return Generator<UserMessage|AssistantMessage|SystemMessage|ResultMessage>
      */
     public function processQuery(
         string $prompt,

@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\ResultMessage;
-use HelgeSverre\ClaudeCode\Types\SystemMessage;
-use HelgeSverre\ClaudeCode\Types\TextBlock;
-use HelgeSverre\ClaudeCode\Types\UserMessage;
+use HelgeSverre\ClaudeCode\Types\Config\MCPServerInfo;
+use HelgeSverre\ClaudeCode\Types\Config\SystemInitData;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 describe('UserMessage', function () {
     it('creates user message with content', function () {
@@ -41,13 +43,31 @@ describe('AssistantMessage', function () {
 });
 
 describe('SystemMessage', function () {
-    it('creates system message with subtype and data', function () {
-        $data = ['session_id' => 'abc123'];
-        $message = new SystemMessage('session_started', $data);
+    it('creates system message with subtype and null data', function () {
+        $message = new SystemMessage('session_started');
 
         expect($message->type)->toBe('system');
         expect($message->subtype)->toBe('session_started');
-        expect($message->data)->toBe($data);
+        expect($message->data)->toBeNull();
+    });
+
+    it('creates system message with init data', function () {
+        $initData = new SystemInitData(
+            apiKeySource: 'env',
+            cwd: '/home/user',
+            sessionId: 'test-123',
+            tools: ['Read', 'Write'],
+            mcpServers: [new MCPServerInfo('server1', 'connected')],
+            model: 'claude-3',
+            permissionMode: 'default',
+        );
+
+        $message = new SystemMessage('init', $initData);
+
+        expect($message->type)->toBe('system');
+        expect($message->subtype)->toBe('init');
+        expect($message->data)->toBe($initData);
+        expect($message->data->sessionId)->toBe('test-123');
     });
 });
 
@@ -89,7 +109,7 @@ describe('ResultMessage', function () {
 
         expect($message->type)->toBe('result');
         expect($message->subtype)->toBe('error_max_turns');
-        expect($message->isError)->toBe(true);
+        expect($message->isError)->toBeTrue();
         expect($message->result)->toBeNull();
         expect($message->usage)->toBeNull();
     });

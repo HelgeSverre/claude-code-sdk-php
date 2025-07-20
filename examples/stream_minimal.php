@@ -5,25 +5,23 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use HelgeSverre\ClaudeCode\ClaudeCode;
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\Message;
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
-use HelgeSverre\ClaudeCode\Types\ResultMessage;
-use HelgeSverre\ClaudeCode\Types\SystemMessage;
-use HelgeSverre\ClaudeCode\Types\TextBlock;
-use HelgeSverre\ClaudeCode\Types\ToolResultBlock;
-use HelgeSverre\ClaudeCode\Types\ToolUseBlock;
-use HelgeSverre\ClaudeCode\Types\UserMessage;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 /**
  * Minimal fixed-width prefixes for clean alignment
  *
- * @param Generator<Message> $messages
+ * @param Generator<AssistantMessage|UserMessage|SystemMessage|ResultMessage> $messages
  */
 function streamMessages(Generator $messages): void
 {
-    ray()->newScreen();
 
     // Check if the generator is valid
     if (! $messages->valid()) {
@@ -39,7 +37,7 @@ function streamMessages(Generator $messages): void
             $message instanceof SystemMessage => printf(
                 "\033[90m(SYSTEM)\033[0m %s → %s\n",
                 $message->subtype,
-                $message->data['session_id'] ?? 'new',
+                $message->data?->sessionId ?? 'new',
             ),
 
             $message instanceof UserMessage => match (true) {
@@ -100,6 +98,8 @@ streamMessages(
     ClaudeCode::query('Say hello and tell me what you can do in one sentence.'),
 );
 
+echo str_repeat('-', 120) . "\n\n";
+
 // Example 2: With custom options
 streamMessages(
     ClaudeCode::query(
@@ -110,6 +110,8 @@ streamMessages(
         ),
     ),
 );
+
+echo str_repeat('-', 120) . "\n\n";
 
 // Example 3: File operations
 streamMessages(

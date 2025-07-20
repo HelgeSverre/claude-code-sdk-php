@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-namespace HelgeSverre\ClaudeCode\Types;
+namespace HelgeSverre\ClaudeCode\Types\ServerConfigs;
 
-class HTTPServerConfig extends MCPServerConfig
+readonly class SSEServerConfig
 {
     /**
      * @param array<string, string> $headers
      */
     public function __construct(
-        public readonly string $url,
-        public readonly array $headers = [],
-    ) {
-        parent::__construct('http');
-    }
+        public string $url,
+        public array $headers = [],
+        public string $type = 'sse',
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return array_filter([

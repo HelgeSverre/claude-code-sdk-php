@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Laravel;
 
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\MCPServerConfig;
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 
 class ClaudeCodeOptionsBuilder
 {
@@ -122,7 +121,7 @@ class ClaudeCodeOptionsBuilder
     }
 
     /**
-     * @param array<string, MCPServerConfig> $servers
+     * @param array<string, object> $servers Array of server config objects
      */
     public function mcpServers(array $servers): self
     {

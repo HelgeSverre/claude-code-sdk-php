@@ -2,28 +2,30 @@
 
 declare(strict_types=1);
 
-namespace HelgeSverre\ClaudeCode\Types;
+namespace HelgeSverre\ClaudeCode\Types\Config;
 
-class ClaudeCodeOptions
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
+
+readonly class ClaudeCodeOptions
 {
     /**
-     * @param array<string>|null $allowedTools
-     * @param array<string>|null $disallowedTools
-     * @param array<string, MCPServerConfig>|null $mcpServers
+     * @param array<int, string>|null $allowedTools
+     * @param array<int, string>|null $disallowedTools
+     * @param array|null $mcpServers Array of server config objects (StdioServerConfig, HTTPServerConfig, or SSEServerConfig)
      */
     public function __construct(
-        public readonly ?string $systemPrompt = null,
-        public readonly ?string $appendSystemPrompt = null,
-        public readonly ?array $allowedTools = null,
-        public readonly ?array $disallowedTools = null,
-        public readonly ?PermissionMode $permissionMode = null,
-        public readonly ?string $permissionPromptToolName = null,
-        public readonly ?bool $continueConversation = null,
-        public readonly ?string $resume = null,
-        public readonly ?int $maxTurns = null,
-        public readonly ?string $model = null,
-        public readonly ?string $cwd = null,
-        public readonly ?array $mcpServers = null,
+        public ?string $systemPrompt = null,
+        public ?string $appendSystemPrompt = null,
+        public ?array $allowedTools = null,
+        public ?array $disallowedTools = null,
+        public ?PermissionMode $permissionMode = null,
+        public ?string $permissionPromptToolName = null,
+        public ?bool $continueConversation = null,
+        public ?string $resume = null,
+        public ?int $maxTurns = null,
+        public ?string $model = null,
+        public ?string $cwd = null,
+        public ?array $mcpServers = null,
     ) {}
 
     /**
@@ -79,7 +81,7 @@ class ClaudeCodeOptions
 
         if ($this->mcpServers !== null) {
             $data['mcpServers'] = array_map(
-                fn (MCPServerConfig $config) => $config->toArray(),
+                fn (object $config) => $config->toArray(),
                 $this->mcpServers,
             );
         }

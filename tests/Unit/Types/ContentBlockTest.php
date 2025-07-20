@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\Types\TextBlock;
-use HelgeSverre\ClaudeCode\Types\ToolResultBlock;
-use HelgeSverre\ClaudeCode\Types\ToolUseBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
 
 describe('TextBlock', function () {
     it('creates text block with correct properties', function () {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
-use HelgeSverre\ClaudeCode\Types\StdioServerConfig;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\StdioServerConfig;
 
 it('creates options with default values', function () {
     $options = new ClaudeCodeOptions;

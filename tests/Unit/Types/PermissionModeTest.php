@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 
 it('has correct enum values', function () {
     expect(PermissionMode::DEFAULT->value)->toBe('default');

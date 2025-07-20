@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\Types\HTTPServerConfig;
-use HelgeSverre\ClaudeCode\Types\SSEServerConfig;
-use HelgeSverre\ClaudeCode\Types\StdioServerConfig;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\HTTPServerConfig;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\SSEServerConfig;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\StdioServerConfig;
 
 describe('StdioServerConfig', function () {
     it('creates stdio config with command only', function () {

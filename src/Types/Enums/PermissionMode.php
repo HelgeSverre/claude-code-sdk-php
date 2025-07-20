@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace HelgeSverre\ClaudeCode\Types;
+namespace HelgeSverre\ClaudeCode\Types\Enums;
 
 enum PermissionMode: string
 {

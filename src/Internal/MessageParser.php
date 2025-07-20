@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Internal;
 
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\ContentBlock;
-use HelgeSverre\ClaudeCode\Types\Message;
-use HelgeSverre\ClaudeCode\Types\ResultMessage;
-use HelgeSverre\ClaudeCode\Types\SystemMessage;
-use HelgeSverre\ClaudeCode\Types\TextBlock;
-use HelgeSverre\ClaudeCode\Types\ToolResultBlock;
-use HelgeSverre\ClaudeCode\Types\ToolUseBlock;
-use HelgeSverre\ClaudeCode\Types\UserMessage;
+use HelgeSverre\ClaudeCode\Types\Config\MCPServerInfo;
+use HelgeSverre\ClaudeCode\Types\Config\SystemInitData;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 class MessageParser
 {
     /**
      * @param array<string, mixed> $data
      */
-    public function parse(array $data): ?Message
+    public function parse(array $data): UserMessage|AssistantMessage|SystemMessage|ResultMessage|null
     {
-        ray($data)->purple();
-
         $type = $data['type'] ?? null;
 
         return match ($type) {
@@ -63,6 +61,29 @@ class MessageParser
     }
 
     /**
+     * @param array<string, mixed> $block
+     */
+    protected function parseContentBlock(array $block): TextBlock|ToolUseBlock|ToolResultBlock|null
+    {
+        $type = $block['type'] ?? null;
+
+        return match ($type) {
+            'text' => new TextBlock($block['text'] ?? ''),
+            'tool_use' => new ToolUseBlock(
+                $block['id'] ?? '',
+                $block['name'] ?? '',
+                $block['input'] ?? [],
+            ),
+            'tool_result' => new ToolResultBlock(
+                $block['tool_use_id'] ?? '',
+                $block['content'] ?? '',
+                $block['is_error'] ?? null,
+            ),
+            default => null,
+        };
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     protected function parseAssistantMessage(array $data): AssistantMessage
@@ -94,14 +115,35 @@ class MessageParser
      */
     protected function parseSystemMessage(array $data): SystemMessage
     {
-        // Extract all data except type and subtype
-        $systemData = $data;
-        unset($systemData['type'], $systemData['subtype']);
+        $subtype = $data['subtype'] ?? '';
 
-        return new SystemMessage(
-            $data['subtype'] ?? '',
-            $systemData,
-        );
+        // For init subtype, create the strongly typed DTO
+        $systemData = null;
+        if ($subtype === 'init') {
+            $mcpServers = [];
+            if (isset($data['mcp_servers']) && is_array($data['mcp_servers'])) {
+                foreach ($data['mcp_servers'] as $server) {
+                    if (is_array($server) && isset($server['name'], $server['status'])) {
+                        $mcpServers[] = new MCPServerInfo(
+                            $server['name'],
+                            $server['status'],
+                        );
+                    }
+                }
+            }
+
+            $systemData = new SystemInitData(
+                apiKeySource: $data['apiKeySource'] ?? '',
+                cwd: $data['cwd'] ?? '',
+                sessionId: $data['session_id'] ?? '',
+                tools: $data['tools'] ?? [],
+                mcpServers: $mcpServers,
+                model: $data['model'] ?? '',
+                permissionMode: $data['permissionMode'] ?? '',
+            );
+        }
+
+        return new SystemMessage($subtype, $systemData);
     }
 
     /**
@@ -120,28 +162,5 @@ class MessageParser
             result: $data['result'] ?? null,
             usage: $data['usage'] ?? null,
         );
-    }
-
-    /**
-     * @param array<string, mixed> $block
-     */
-    protected function parseContentBlock(array $block): ?ContentBlock
-    {
-        $type = $block['type'] ?? null;
-
-        return match ($type) {
-            'text' => new TextBlock($block['text'] ?? ''),
-            'tool_use' => new ToolUseBlock(
-                $block['id'] ?? '',
-                $block['name'] ?? '',
-                $block['input'] ?? [],
-            ),
-            'tool_result' => new ToolResultBlock(
-                $block['tool_use_id'] ?? '',
-                $block['content'] ?? '',
-                $block['is_error'] ?? null,
-            ),
-            default => null,
-        };
     }
 }

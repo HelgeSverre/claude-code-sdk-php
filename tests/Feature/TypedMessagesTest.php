@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 use HelgeSverre\ClaudeCode\Internal\MessageParser;
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\ResultMessage;
-use HelgeSverre\ClaudeCode\Types\SystemMessage;
-use HelgeSverre\ClaudeCode\Types\UserMessage;
+use HelgeSverre\ClaudeCode\Types\Config\SystemInitData;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 it('parses system message with typed data', function () {
     $parser = new MessageParser;
@@ -29,9 +30,10 @@ it('parses system message with typed data', function () {
 
     expect($message)->toBeInstanceOf(SystemMessage::class);
     expect($message->subtype)->toBe('init');
-    expect($message->data['session_id'])->toBe('test-session');
-    expect($message->data['tools'])->toBe(['Read', 'Write']);
-    expect($message->data['mcp_servers'][0]['name'])->toBe('server1');
+    expect($message->data)->toBeInstanceOf(SystemInitData::class);
+    expect($message->data->sessionId)->toBe('test-session');
+    expect($message->data->tools)->toBe(['Read', 'Write']);
+    expect($message->data->mcpServers[0]->name)->toBe('server1');
 });
 
 it('parses assistant message with session id', function () {

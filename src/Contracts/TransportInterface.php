@@ -5,29 +5,33 @@ declare(strict_types=1);
 namespace HelgeSverre\ClaudeCode\Contracts;
 
 use Generator;
-use HelgeSverre\ClaudeCode\Types\Message;
 
 interface TransportInterface
 {
     /**
-     * Connect to the Claude Code CLI
+     * Connect to the transport.
      */
     public function connect(): void;
 
     /**
-     * Disconnect from the Claude Code CLI
+     * Disconnect from the transport.
      */
     public function disconnect(): void;
 
     /**
-     * Check if connected
+     * Check if connected to the transport.
      */
     public function isConnected(): bool;
 
     /**
-     * Receive messages from the CLI
-     *
-     * @return Generator<Message>
+     * Send a message through the transport.
      */
-    public function receiveMessages(): Generator;
+    public function send(mixed $message): void;
+
+    /**
+     * Receive messages from the transport.
+     *
+     * @return Generator<mixed>
+     */
+    public function receive(): Generator;
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace HelgeSverre\ClaudeCode\Laravel;
 
 use HelgeSverre\ClaudeCode\Internal\Client;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 use Illuminate\Support\ServiceProvider;
 
 class ClaudeCodeServiceProvider extends ServiceProvider

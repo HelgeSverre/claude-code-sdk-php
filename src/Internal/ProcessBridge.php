@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace HelgeSverre\ClaudeCode\Internal\Transport;
+namespace HelgeSverre\ClaudeCode\Internal;
 
 use Closure;
 use Exception;
@@ -12,19 +12,14 @@ use HelgeSverre\ClaudeCode\Exceptions\CLIConnectionException;
 use HelgeSverre\ClaudeCode\Exceptions\CLIJSONDecodeException;
 use HelgeSverre\ClaudeCode\Exceptions\CLINotFoundException;
 use HelgeSverre\ClaudeCode\Exceptions\ProcessException;
-use HelgeSverre\ClaudeCode\Internal\MessageParser;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
 use JsonException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class ProcessBridge implements TransportInterface
 {
-    protected const MAX_BUFFER_SIZE = 1024 * 1024; // 1MB
-
-    protected const MAX_STDERR_SIZE = 10 * 1024 * 1024; // 10MB
-
-    protected const STDERR_TIMEOUT = 30.0; // 30 seconds
+    protected const int|float MAX_BUFFER_SIZE = 1024 * 1024; // 1MB
 
     protected ?Process $process = null;
 
@@ -44,6 +39,13 @@ class ProcessBridge implements TransportInterface
 
         $command = $this->buildCommand();
 
+        // Check working directory before creating process
+        if ($this->options->cwd && ! is_dir($this->options->cwd)) {
+            throw new CLIConnectionException(
+                "Working directory does not exist: {$this->options->cwd}",
+            );
+        }
+
         $this->process = new Process(
             command: $command,
             cwd: $this->options->cwd,
@@ -54,14 +56,6 @@ class ProcessBridge implements TransportInterface
         try {
             $this->process->start();
         } catch (Exception $e) {
-            if ($this->options->cwd && ! is_dir($this->options->cwd)) {
-                throw new CLIConnectionException(
-                    "Working directory does not exist: {$this->options->cwd}",
-                    0,
-                    $e,
-                );
-            }
-
             throw new CLIConnectionException(
                 "Failed to start Claude Code: {$e->getMessage()}",
                 0,
@@ -86,6 +80,20 @@ class ProcessBridge implements TransportInterface
     public function isConnected(): bool
     {
         return $this->process !== null && $this->process->isRunning();
+    }
+
+    public function send(mixed $message): void
+    {
+        if (! $this->isConnected()) {
+            throw new CLIConnectionException('Not connected');
+        }
+
+        // Not implemented for ProcessBridge as communication is one-way
+    }
+
+    public function receive(): Generator
+    {
+        return $this->receiveMessages();
     }
 
     /**
@@ -158,6 +166,9 @@ class ProcessBridge implements TransportInterface
 
     /**
      * @return array<string>
+     *
+     * @throws CLINotFoundException
+     * @throws JsonException
      */
     protected function buildCommand(): array
     {

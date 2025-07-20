@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use HelgeSverre\ClaudeCode\Internal\MessageParser;
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\ResultMessage;
-use HelgeSverre\ClaudeCode\Types\SystemMessage;
-use HelgeSverre\ClaudeCode\Types\TextBlock;
-use HelgeSverre\ClaudeCode\Types\ToolResultBlock;
-use HelgeSverre\ClaudeCode\Types\ToolUseBlock;
-use HelgeSverre\ClaudeCode\Types\UserMessage;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 beforeEach(function () {
     $this->parser = new MessageParser;
@@ -46,6 +46,10 @@ describe('Comprehensive Fixture Parsing', function () {
                     }
 
                     $message = $this->parser->parse($data['raw']);
+
+
+                    ray($message)->green();
+
 
                     if ($message === null) {
                         $parseErrors[] = [
@@ -200,9 +204,11 @@ describe('Comprehensive Fixture Parsing', function () {
                 match ($raw['type']) {
                     'system' => (function () use ($message, $raw) {
                         expect($message->subtype)->toBe($raw['subtype']);
-                        expect($message->data)->toContain($raw['session_id']);
-                        if (isset($raw['tools'])) {
-                            expect($message->data['tools'])->toBe($raw['tools']);
+                        if ($raw['subtype'] === 'init' && $message->data !== null) {
+                            expect($message->data->sessionId)->toBe($raw['session_id']);
+                            if (isset($raw['tools'])) {
+                                expect($message->data->tools)->toBe($raw['tools']);
+                            }
                         }
                     })(),
                     'assistant' => (function () use ($message, $raw) {
