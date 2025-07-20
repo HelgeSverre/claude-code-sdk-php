@@ -322,7 +322,7 @@ Contributions are welcome! Please ensure:
 
 1. All tests pass
 2. Code follows Laravel coding standards (using Pint)
-3. Static analysis passes (PHPStan level 9)
+3. Static analysis passes (PHPStan level 5)
 4. New features include tests
 
 ## License
