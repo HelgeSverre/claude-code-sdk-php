@@ -3,6 +3,7 @@ composer.lock
 .phpunit.result.cache
 .phpstan/
 build/
+claude-code-sdk-python/
 coverage/
 .idea/
 .vscode/

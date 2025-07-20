@@ -1,0 +1,72 @@
+{
+  "name": "helgesverre/claude-code-sdk",
+  "version": "1.0.0",
+  "description": "PHP SDK for Claude Code",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "claude",
+    "anthropic",
+    "ai",
+    "sdk",
+    "cli",
+    "php"
+  ],
+  "authors": [
+    {
+      "name": "Helge Sverre",
+      "email": "helge.sverre@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.3",
+    "ext-json": "*",
+    "symfony/process": "^7.0",
+    "react/stream": "^1.3",
+    "react/event-loop": "^1.5",
+    "react/promise": "^3.1"
+  },
+  "require-dev": {
+    "pestphp/pest": "^2.0",
+    "pestphp/pest-plugin-arch": "^2.0",
+    "pestphp/pest-plugin-type-coverage": "^2.0",
+    "phpstan/phpstan": "^1.10",
+    "laravel/pint": "^1.0",
+    "orchestra/testbench": "^8.0|^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "HelgeSverre\\ClaudeCode\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HelgeSverre\\ClaudeCode\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "test:coverage": "vendor/bin/pest --coverage",
+    "analyse": "vendor/bin/phpstan analyse",
+    "format": "vendor/bin/pint",
+    "format:check": "vendor/bin/pint --test"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "HelgeSverre\\ClaudeCode\\Laravel\\ClaudeCodeServiceProvider"
+      ],
+      "aliases": {
+        "ClaudeCode": "HelgeSverre\\ClaudeCode\\Laravel\\Facades\\ClaudeCode"
+      }
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
