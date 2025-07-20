@@ -482,7 +482,6 @@ describe('parse result messages', function () {
 
         $message = $this->parser->parse($data);
 
-
         expect($message)->toBeInstanceOf(ResultMessage::class);
         expect($message->totalCostUsd)->toBe(0.05);
         expect($message->usage)->toBe(['total' => 100]);

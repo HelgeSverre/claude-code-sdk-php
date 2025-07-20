@@ -47,9 +47,7 @@ describe('Comprehensive Fixture Parsing', function () {
 
                     $message = $this->parser->parse($data['raw']);
 
-
                     ray($message)->green();
-
 
                     if ($message === null) {
                         $parseErrors[] = [
