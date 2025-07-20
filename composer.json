@@ -48,6 +48,7 @@
   "scripts": {
     "test": "vendor/bin/pest",
     "test:coverage": "vendor/bin/pest --coverage",
+    "test:generate:fixtures": "php ./tests/GenerateFixtures.php",
     "analyse": "vendor/bin/phpstan analyse",
     "format": "vendor/bin/pint",
     "format:check": "vendor/bin/pint --test"
