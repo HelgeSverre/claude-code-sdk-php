@@ -18,7 +18,7 @@ use JsonException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class SubprocessCLITransport implements TransportInterface
+class ProcessBridge implements TransportInterface
 {
     protected const MAX_BUFFER_SIZE = 1024 * 1024; // 1MB
 
