@@ -5,8 +5,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use HelgeSverre\ClaudeCode\Internal\Client;
-use HelgeSverre\ClaudeCode\Internal\Transport\ProcessBridge;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Internal\ProcessBridge;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
 
 function fixturePath($name): string
 {

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Laravel;
 
-use HelgeSverre\ClaudeCode\Internal\Client;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 use Illuminate\Support\ServiceProvider;
 
 class ClaudeCodeServiceProvider extends ServiceProvider
@@ -42,12 +41,36 @@ class ClaudeCodeServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton(Client::class, function ($app) {
-            return new Client;
-        });
-
         $this->app->singleton('claude-code', function ($app) {
-            return new ClaudeCodeManager($app[Client::class], $app[ClaudeCodeOptions::class]);
+            return new class($app[ClaudeCodeOptions::class])
+            {
+                public function __construct(
+                    private ClaudeCodeOptions $defaultOptions,
+                ) {}
+
+                public function query(string $prompt, ?ClaudeCodeOptions $options = null): \Generator
+                {
+                    putenv('CLAUDE_CODE_ENTRYPOINT=sdk-php');
+
+                    $options ??= $this->defaultOptions;
+                    $transport = new \HelgeSverre\ClaudeCode\Internal\ProcessBridge($prompt, $options);
+
+                    try {
+                        $transport->connect();
+
+                        foreach ($transport->receiveMessages() as $message) {
+                            yield $message;
+                        }
+                    } finally {
+                        $transport->disconnect();
+                    }
+                }
+
+                public function options(): ClaudeCodeOptionsBuilder
+                {
+                    return new ClaudeCodeOptionsBuilder($this->defaultOptions);
+                }
+            };
         });
     }
 
@@ -72,7 +95,6 @@ class ClaudeCodeServiceProvider extends ServiceProvider
     {
         return [
             'claude-code',
-            Client::class,
             ClaudeCodeOptions::class,
         ];
     }

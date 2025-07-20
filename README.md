@@ -33,20 +33,35 @@ npm install -g @anthropic-ai/claude-code
 ### Basic Usage
 
 ```php
-use HelgeSverre\ClaudeCode\ClaudeCode;
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\TextBlock;
+<?php
 
+use HelgeSverre\ClaudeCode\ClaudeCode;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+
+// Send a query to Claude
 $messages = ClaudeCode::query("What files are in the current directory?");
 
+// Process the streaming response
 foreach ($messages as $message) {
-    if ($message instanceof AssistantMessage) {
-        foreach ($message->content as $block) {
-            if ($block instanceof TextBlock) {
-                echo $block->text . "\n";
-            }
-        }
-    }
+    match (true) {
+        $message instanceof SystemMessage => 
+            echo "[SYSTEM] {$message->subtype}\n",
+            
+        $message instanceof AssistantMessage => 
+            array_map(function ($block) {
+                if ($block instanceof TextBlock) {
+                    echo "[CLAUDE] {$block->text}\n";
+                }
+            }, $message->content),
+            
+        $message instanceof ResultMessage => 
+            echo "[DONE] Cost: \${$message->totalCostUsd} | Time: {$message->durationMs}ms\n",
+            
+        default => null
+    };
 }
 ```
 
@@ -54,8 +69,8 @@ foreach ($messages as $message) {
 
 ```php
 use HelgeSverre\ClaudeCode\ClaudeCode;
-use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
-use HelgeSverre\ClaudeCode\Types\PermissionMode;
+use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 
 $options = new ClaudeCodeOptions(
     systemPrompt: "You are a helpful coding assistant",
@@ -176,46 +191,85 @@ $options = new ClaudeCodeOptions(
 
 ## Message Types
 
-The SDK provides strongly-typed message classes:
+The SDK provides strongly-typed message classes with proper DTOs:
 
-### UserMessage
+### SystemMessage
+
+System events with typed data for initialization:
 
 ```php
-$message = new UserMessage("Hello Claude!");
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Config\SystemInitData;
+
+if ($message instanceof SystemMessage && $message->subtype === 'init') {
+    // Strongly typed init data
+    $initData = $message->data; // SystemInitData instance
+    echo "Session ID: {$initData->sessionId}\n";
+    echo "Model: {$initData->model}\n";
+    echo "Tools: " . implode(', ', $initData->tools) . "\n";
+    echo "Working Directory: {$initData->cwd}\n";
+}
 ```
 
 ### AssistantMessage
 
-Contains content blocks (TextBlock, ToolUseBlock, ToolResultBlock):
+Contains content blocks with Claude's responses:
 
 ```php
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\{TextBlock, ToolUseBlock, ToolResultBlock};
+
 foreach ($message->content as $block) {
-    match ($block::class) {
-        TextBlock::class => echo $block->text,
-        ToolUseBlock::class => echo "Tool: {$block->name}",
-        ToolResultBlock::class => echo "Result: {$block->content}",
+    match (true) {
+        $block instanceof TextBlock => 
+            echo "Text: {$block->text}\n",
+            
+        $block instanceof ToolUseBlock => 
+            echo "Tool: {$block->name} with " . json_encode($block->input) . "\n",
+            
+        $block instanceof ToolResultBlock => 
+            echo "Result: {$block->content} (Error: " . ($block->isError ? 'Yes' : 'No') . ")\n",
     };
 }
 ```
 
-### SystemMessage
+### UserMessage
 
-System events and metadata:
+User input and tool feedback:
 
 ```php
-if ($message->subtype === 'session_started') {
-    $sessionId = $message->data['session_id'];
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
+
+// Simple text message
+$message = new UserMessage("Hello Claude!");
+
+// Tool feedback (from Claude's perspective)
+if (is_array($message->content)) {
+    foreach ($message->content as $block) {
+        if ($block instanceof ToolResultBlock) {
+            echo "Tool feedback: {$block->content}\n";
+            echo "Tool ID: {$block->toolUseId}\n";
+            echo "Is Error: " . ($block->isError ? 'Yes' : 'No') . "\n";
+        }
+    }
 }
 ```
 
 ### ResultMessage
 
-Final result with usage information:
+Session completion with usage metrics:
 
 ```php
-echo "Cost: \${$message->cost}\n";
-echo "Tokens used: {$message->usage['total']}\n";
-echo "Model: {$message->model}\n";
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+
+echo "Total Cost: \${$message->totalCostUsd}\n";
+echo "Duration: {$message->durationMs}ms\n";
+echo "API Time: {$message->durationApiMs}ms\n";
+echo "Turns: {$message->numTurns}\n";
+echo "Session ID: {$message->sessionId}\n";
+echo "Input Tokens: {$message->usage['input_tokens']}\n";
+echo "Output Tokens: {$message->usage['output_tokens']}\n";
 ```
 
 ## MCP Server Configuration
@@ -223,9 +277,9 @@ echo "Model: {$message->model}\n";
 Configure Model Context Protocol servers:
 
 ```php
-use HelgeSverre\ClaudeCode\Types\StdioServerConfig;
-use HelgeSverre\ClaudeCode\Types\SSEServerConfig;
-use HelgeSverre\ClaudeCode\Types\HTTPServerConfig;
+use HelgeSverre\ClaudeCode\Types\Config\StdioServerConfig;
+use HelgeSverre\ClaudeCode\Types\Config\SSEServerConfig;
+use HelgeSverre\ClaudeCode\Types\Config\HTTPServerConfig;
 
 $options = new ClaudeCodeOptions(
     mcpServers: [
@@ -306,15 +360,16 @@ composer format:check
 
 ## Architecture
 
-The SDK follows a clean architecture pattern:
+The SDK follows a clean architecture with organized namespaces:
 
-- **Types/** - Data structures and value objects
-- **Contracts/** - Interfaces for extensibility
-- **Internal/** - Core implementation details
-- **Laravel/** - Laravel-specific integration
-- **Exceptions/** - Custom exception hierarchy
-
-The transport layer is abstracted, allowing for future implementations beyond the subprocess CLI transport.
+- **Types/**
+  - **Config/** - Configuration DTOs (ClaudeCodeOptions, SystemInitData)
+  - **Messages/** - Message types (System, Assistant, User, Result)
+  - **ContentBlocks/** - Content blocks (Text, ToolUse, ToolResult)
+  - **Enums/** - Enumerations (PermissionMode)
+- **Internal/** - Core implementation (MessageParser, ProcessBridge)
+- **Laravel/** - Laravel integration (ServiceProvider, Facade, Manager)
+- **Exceptions/** - Custom exceptions (CLINotFoundException, ProcessException)
 
 ## Contributing
 
@@ -322,7 +377,7 @@ Contributions are welcome! Please ensure:
 
 1. All tests pass
 2. Code follows Laravel coding standards (using Pint)
-3. Static analysis passes (PHPStan level 9)
+3. Static analysis passes (PHPStan level 5)
 4. New features include tests
 
 ## License

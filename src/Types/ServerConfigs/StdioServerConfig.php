@@ -2,22 +2,24 @@
 
 declare(strict_types=1);
 
-namespace HelgeSverre\ClaudeCode\Types;
+namespace HelgeSverre\ClaudeCode\Types\ServerConfigs;
 
-class StdioServerConfig extends MCPServerConfig
+readonly class StdioServerConfig
 {
     /**
-     * @param array<string> $args
+     * @param array<int, string> $args
      * @param array<string, string> $env
      */
     public function __construct(
-        public readonly string $command,
-        public readonly array $args = [],
-        public readonly array $env = [],
-    ) {
-        parent::__construct('stdio');
-    }
+        public string $command,
+        public array $args = [],
+        public array $env = [],
+        public string $type = 'stdio',
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return array_filter([

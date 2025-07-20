@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use HelgeSverre\ClaudeCode\Internal\MessageParser;
-use HelgeSverre\ClaudeCode\Types\AssistantMessage;
-use HelgeSverre\ClaudeCode\Types\ResultMessage;
-use HelgeSverre\ClaudeCode\Types\SystemMessage;
-use HelgeSverre\ClaudeCode\Types\TextBlock;
-use HelgeSverre\ClaudeCode\Types\ToolResultBlock;
-use HelgeSverre\ClaudeCode\Types\ToolUseBlock;
-use HelgeSverre\ClaudeCode\Types\UserMessage;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
+use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
+use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
+use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 
 beforeEach(function () {
     $this->parser = new MessageParser;
@@ -46,6 +46,8 @@ describe('Comprehensive Fixture Parsing', function () {
                     }
 
                     $message = $this->parser->parse($data['raw']);
+
+                    ray($message)->green();
 
                     if ($message === null) {
                         $parseErrors[] = [
@@ -200,9 +202,11 @@ describe('Comprehensive Fixture Parsing', function () {
                 match ($raw['type']) {
                     'system' => (function () use ($message, $raw) {
                         expect($message->subtype)->toBe($raw['subtype']);
-                        expect($message->data)->toContain($raw['session_id']);
-                        if (isset($raw['tools'])) {
-                            expect($message->data['tools'])->toBe($raw['tools']);
+                        if ($raw['subtype'] === 'init' && $message->data !== null) {
+                            expect($message->data->sessionId)->toBe($raw['session_id']);
+                            if (isset($raw['tools'])) {
+                                expect($message->data->tools)->toBe($raw['tools']);
+                            }
                         }
                     })(),
                     'assistant' => (function () use ($message, $raw) {
@@ -251,21 +255,31 @@ describe('Specific Fixture Scenarios', function () {
             }
         }
 
-        // Should have at least system init, assistant response, and result
-        expect($messages)->toHaveCount(3);
+        // Should have at least system init, assistant responses, user feedback, and result
+        expect($messages)->toHaveCount(6);
 
         // First message should be system init
         expect($messages[0])->toBeInstanceOf(SystemMessage::class);
         expect($messages[0]->subtype)->toBe('init');
 
-        // Second should be assistant response
+        // Second should be assistant response with text
         expect($messages[1])->toBeInstanceOf(AssistantMessage::class);
         expect($messages[1]->content)->not->toBeEmpty();
         expect($messages[1]->content[0])->toBeInstanceOf(TextBlock::class);
 
+        // Third should be assistant with tool use (TodoWrite)
+        expect($messages[2])->toBeInstanceOf(AssistantMessage::class);
+        expect($messages[2]->content[0])->toBeInstanceOf(ToolUseBlock::class);
+
+        // Fourth should be user feedback
+        expect($messages[3])->toBeInstanceOf(UserMessage::class);
+
+        // Fifth should be another assistant response
+        expect($messages[4])->toBeInstanceOf(AssistantMessage::class);
+
         // Last should be result
-        expect($messages[2])->toBeInstanceOf(ResultMessage::class);
-        expect($messages[2]->totalCostUsd)->toBeGreaterThan(0);
+        expect($messages[5])->toBeInstanceOf(ResultMessage::class);
+        expect($messages[5]->totalCostUsd)->toBeGreaterThan(0);
     });
 
     it('handles tool errors with user feedback correctly', function () {
