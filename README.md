@@ -1,6 +1,10 @@
 # Claude Code SDK for PHP
 
-PHP SDK for [Claude Code](https://github.com/anthropics/claude-code), This is a AI-generated port of the official [Python SDK](https://github.com/anthropics/claude-code-sdk-python) from Anthropic.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
+[![Total Downloads](https://img.shields.io/packagist/dt/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
+
+PHP SDK for [Claude Code](https://github.com/anthropics/claude-code), This is a AI-generated port of the
+official [Python SDK](https://github.com/anthropics/claude-code-sdk-python) from Anthropic.
 
 This SDK provides a type-safe, async-friendly interface for interacting with Claude Code from PHP applications.
 
@@ -324,8 +328,3 @@ Contributions are welcome! Please ensure:
 ## License
 
 This SDK is open-source software licensed under the [MIT license](LICENSE).
-
-## Credits
-
-Built with ❤️ by the Anthropic team. Based on the [Python SDK](https://github.com/anthropics/claude-code-sdk-python)
-architecture.

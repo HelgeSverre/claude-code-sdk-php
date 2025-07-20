@@ -13,26 +13,12 @@ declare(strict_types=1);
 |
 */
 
+use Mockery\MockInterface;
 use Symfony\Component\Process\Process;
 
 uses(
     HelgeSverre\ClaudeCode\Tests\TestCase::class,
-)->in('Unit', 'Feature');
-
-/*
-|--------------------------------------------------------------------------
-| Expectations
-|--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
-*/
-
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+)->in('Unit', 'Feature', 'Integration');
 
 /*
 |--------------------------------------------------------------------------
@@ -46,9 +32,9 @@ expect()->extend('toBeOne', function () {
 */
 
 /**
- * @return \Mockery\MockInterface&Process
+ * @return MockInterface&Process
  */
-function mockProcess(): \Mockery\MockInterface
+function mockProcess(): MockInterface
 {
     return Mockery::mock(Process::class);
 }
