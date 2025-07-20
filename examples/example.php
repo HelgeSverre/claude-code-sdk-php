@@ -88,7 +88,7 @@ echo "=== Example 3: Project Scaffolding ===\n\n";
 
 $scaffoldOptions = new ClaudeCodeOptions(
     allowedTools: ['Write', 'Read', 'Edit', 'LS', 'Glob'],
-    permissionMode: PermissionMode::ACCEPT_EDITS,
+    permissionMode: PermissionMode::acceptEdits,
     model: 'claude-sonnet',
     cwd: __DIR__ . '/mvc-project', // Use a specific model
 );
