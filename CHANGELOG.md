@@ -1,0 +1,43 @@
+# Changelog
+
+## [1.0.0] - 2025-01-20
+
+### Initial Release
+
+This SDK is initially based off of the Official Claude Code SDK for Python, that I ironically made into PHP using
+Claude Code. 🤖
+
+Circle of life, I guess.
+
+### Added
+
+- Initial stable release of Claude Code SDK for PHP
+- Full support for Claude Code CLI interaction via subprocess
+- Strongly-typed message classes (System, User, Assistant, Result)
+- Typed content blocks (Text, ToolUse, ToolResult)
+- Comprehensive configuration options via `ClaudeCodeOptions`
+- Laravel integration with service provider and facade
+- MCP (Model Context Protocol) server support (Stdio, SSE, HTTP)
+- Permission modes for tool usage control
+- Streaming response handling with PHP generators
+- Comprehensive test suite with real fixture parsing
+- PHPStan level 5 static analysis
+- Laravel Pint code formatting
+
+### Features
+
+- Type-safe API for all Claude Code interactions
+- Support for all Claude Code CLI options
+- Session management (continue, resume)
+- Custom system prompts
+- Tool allowlist/denylist configuration
+- Working directory validation
+- Error handling with specific exception types
+- Cost and usage tracking via ResultMessage
+
+### Documentation
+
+- Comprehensive README with examples
+- Inline PHPDoc comments
+- Laravel-specific integration guide
+- Architecture overview

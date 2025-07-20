@@ -1,6 +1,5 @@
 {
   "name": "helgesverre/claude-code-sdk",
-  "version": "1.0.0",
   "description": "PHP SDK for Claude Code",
   "type": "library",
   "license": "MIT",
@@ -32,6 +31,9 @@
     "phpstan/phpstan": "^1.10",
     "spatie/ray": "^1.42"
   },
+  "suggest": {
+    "laravel/framework": "Required for Laravel integration (^10.0|^11.0|^12.0)"
+  },
   "autoload": {
     "psr-4": {
       "HelgeSverre\\ClaudeCode\\": "src/"
@@ -46,7 +48,7 @@
     "test": "vendor/bin/pest",
     "test:coverage": "vendor/bin/pest --coverage",
     "test:generate:fixtures": "php ./tests/GenerateFixtures.php",
-    "analyse": "vendor/bin/phpstan analyse",
+    "analyse": "vendor/bin/phpstan analyse src --level=5",
     "format": "vendor/bin/pint",
     "format:check": "vendor/bin/pint --test"
   },

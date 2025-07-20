@@ -3,10 +3,18 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 [![Total Downloads](https://img.shields.io/packagist/dt/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 
-PHP SDK for [Claude Code](https://github.com/anthropics/claude-code), This is a AI-generated port of the
-official [Python SDK](https://github.com/anthropics/claude-code-sdk-python) from Anthropic.
+A type-safe PHP SDK for [Claude Code](https://github.com/anthropics/claude-code), providing seamless integration with
+Anthropic's AI coding assistant.
 
-This SDK provides a type-safe, async-friendly interface for interacting with Claude Code from PHP applications.
+## Features
+
+- Fully typed messages, content blocks, and configuration options
+- Real-time message streaming with PHP generators
+- Laravel integration with service provider and facade
+- Model Context Protocol (MCP) server support (Stdio, SSE, HTTP)
+- Configurable tool permissions and session management
+- Cost and token usage tracking
+- Comprehensive test suite with fixture-based testing
 
 ## Requirements
 
@@ -79,7 +87,27 @@ $options = new ClaudeCodeOptions(
     maxTurns: 5,
 );
 
+
+/**
+ * A generator is returned, allowing you to stream messages as they are generated.
+ * @var Generator<HelgeSverre\ClaudeCode\Types\Messages\Message> $messages 
+ */
 $messages = ClaudeCode::query("Help me refactor this code", $options);
+
+
+foreach ($messages as $message) {
+    if ($message instanceof AssistantMessage) {
+        foreach ($message->content as $block) {
+            if ($block instanceof TextBlock) {
+                echo "[CLAUDE] {$block->text}\n";
+            }
+        }
+    } elseif ($message instanceof ResultMessage) {
+        echo "[DONE] Total Cost: \${$message->totalCostUsd}\n";
+    }
+}
+
+
 ```
 
 ## Laravel Integration
@@ -89,7 +117,7 @@ $messages = ClaudeCode::query("Help me refactor this code", $options);
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --tag=claude-code-config
+@
 ```
 
 Configure your settings in `config/claude-code.php` or use environment variables:
@@ -122,13 +150,16 @@ $messages = ClaudeCode::query("Help me build a REST API", $options);
 ### Dependency Injection
 
 ```php
-use HelgeSverre\ClaudeCode\Laravel\ClaudeCodeManager;
+use Illuminate\Support\Facades\App;
 
 class MyService
 {
-    public function __construct(
-        private ClaudeCodeManager $claude
-    ) {}
+    private $claude;
+    
+    public function __construct()
+    {
+        $this->claude = App::make('claude-code');
+    }
 
     public function generateCode(string $prompt): void
     {
@@ -184,7 +215,7 @@ $options = new ClaudeCodeOptions(
     
     // MCP server configurations
     mcpServers: [
-        'my-server' => new StdioServerConfig('node', ['server.js']),
+        'my-server' => new \HelgeSverre\ClaudeCode\Types\ServerConfigs\StdioServerConfig('node', ['server.js']),
     ],
 );
 ```
@@ -277,9 +308,9 @@ echo "Output Tokens: {$message->usage['output_tokens']}\n";
 Configure Model Context Protocol servers:
 
 ```php
-use HelgeSverre\ClaudeCode\Types\Config\StdioServerConfig;
-use HelgeSverre\ClaudeCode\Types\Config\SSEServerConfig;
-use HelgeSverre\ClaudeCode\Types\Config\HTTPServerConfig;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\StdioServerConfig;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\SSEServerConfig;
+use HelgeSverre\ClaudeCode\Types\ServerConfigs\HTTPServerConfig;
 
 $options = new ClaudeCodeOptions(
     mcpServers: [
@@ -307,7 +338,7 @@ $options = new ClaudeCodeOptions(
 
 ## Error Handling
 
-The SDK provides specific exception types:
+The SDK provides specific exception types for different failure scenarios:
 
 ```php
 use HelgeSverre\ClaudeCode\ClaudeCode;
@@ -338,6 +369,10 @@ Run tests with coverage:
 
 ```bash
 composer test:coverage
+
+# Using herd 
+herd coverage ./vendor/bin/pest --type-coverage
+herd coverage ./vendor/bin/pest --coverage
 ```
 
 Run static analysis:
@@ -358,19 +393,6 @@ Check code formatting:
 composer format:check
 ```
 
-## Architecture
-
-The SDK follows a clean architecture with organized namespaces:
-
-- **Types/**
-  - **Config/** - Configuration DTOs (ClaudeCodeOptions, SystemInitData)
-  - **Messages/** - Message types (System, Assistant, User, Result)
-  - **ContentBlocks/** - Content blocks (Text, ToolUse, ToolResult)
-  - **Enums/** - Enumerations (PermissionMode)
-- **Internal/** - Core implementation (MessageParser, ProcessBridge)
-- **Laravel/** - Laravel integration (ServiceProvider, Facade, Manager)
-- **Exceptions/** - Custom exceptions (CLINotFoundException, ProcessException)
-
 ## Contributing
 
 Contributions are welcome! Please ensure:
@@ -382,4 +404,4 @@ Contributions are welcome! Please ensure:
 
 ## License
 
-This SDK is open-source software licensed under the [MIT license](LICENSE).
+This SDK is open-source software licensed under the [MIT license](LICENSE.md).
