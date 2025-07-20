@@ -257,21 +257,31 @@ describe('Specific Fixture Scenarios', function () {
             }
         }
 
-        // Should have at least system init, assistant response, and result
-        expect($messages)->toHaveCount(3);
+        // Should have at least system init, assistant responses, user feedback, and result
+        expect($messages)->toHaveCount(6);
 
         // First message should be system init
         expect($messages[0])->toBeInstanceOf(SystemMessage::class);
         expect($messages[0]->subtype)->toBe('init');
 
-        // Second should be assistant response
+        // Second should be assistant response with text
         expect($messages[1])->toBeInstanceOf(AssistantMessage::class);
         expect($messages[1]->content)->not->toBeEmpty();
         expect($messages[1]->content[0])->toBeInstanceOf(TextBlock::class);
 
+        // Third should be assistant with tool use (TodoWrite)
+        expect($messages[2])->toBeInstanceOf(AssistantMessage::class);
+        expect($messages[2]->content[0])->toBeInstanceOf(ToolUseBlock::class);
+
+        // Fourth should be user feedback
+        expect($messages[3])->toBeInstanceOf(UserMessage::class);
+
+        // Fifth should be another assistant response
+        expect($messages[4])->toBeInstanceOf(AssistantMessage::class);
+
         // Last should be result
-        expect($messages[2])->toBeInstanceOf(ResultMessage::class);
-        expect($messages[2]->totalCostUsd)->toBeGreaterThan(0);
+        expect($messages[5])->toBeInstanceOf(ResultMessage::class);
+        expect($messages[5]->totalCostUsd)->toBeGreaterThan(0);
     });
 
     it('handles tool errors with user feedback correctly', function () {
