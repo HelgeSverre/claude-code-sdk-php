@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace HelgeSverre\ClaudeCode;
 
 use Generator;
-use HelgeSverre\ClaudeCode\Internal\Client;
+use HelgeSverre\ClaudeCode\Internal\ProcessBridge;
 use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
 use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
 use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
@@ -26,8 +26,16 @@ class ClaudeCode
         putenv('CLAUDE_CODE_ENTRYPOINT=sdk-php');
 
         $options ??= new ClaudeCodeOptions;
-        $client = new Client;
+        $transport = new ProcessBridge($prompt, $options);
 
-        return $client->processQuery($prompt, $options);
+        try {
+            $transport->connect();
+
+            foreach ($transport->receiveMessages() as $message) {
+                yield $message;
+            }
+        } finally {
+            $transport->disconnect();
+        }
     }
 }

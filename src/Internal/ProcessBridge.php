@@ -7,7 +7,6 @@ namespace HelgeSverre\ClaudeCode\Internal;
 use Closure;
 use Exception;
 use Generator;
-use HelgeSverre\ClaudeCode\Contracts\TransportInterface;
 use HelgeSverre\ClaudeCode\Exceptions\CLIConnectionException;
 use HelgeSverre\ClaudeCode\Exceptions\CLIJSONDecodeException;
 use HelgeSverre\ClaudeCode\Exceptions\CLINotFoundException;
@@ -17,7 +16,7 @@ use JsonException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class ProcessBridge implements TransportInterface
+class ProcessBridge
 {
     protected const int|float MAX_BUFFER_SIZE = 1024 * 1024; // 1MB
 
