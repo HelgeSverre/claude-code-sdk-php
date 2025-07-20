@@ -6,8 +6,11 @@ namespace HelgeSverre\ClaudeCode\Types;
 
 class UserMessage extends Message
 {
+    /**
+     * @param string|array<ContentBlock> $content
+     */
     public function __construct(
-        public readonly string $content,
+        public readonly string|array $content,
     ) {
         parent::__construct('user');
     }

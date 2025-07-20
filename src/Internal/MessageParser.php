@@ -21,6 +21,8 @@ class MessageParser
      */
     public function parse(array $data): ?Message
     {
+        ray($data)->purple();
+
         $type = $data['type'] ?? null;
 
         return match ($type) {
@@ -37,6 +39,25 @@ class MessageParser
      */
     protected function parseUserMessage(array $data): UserMessage
     {
+
+        // Check if we have a nested message structure with content blocks
+        if (isset($data['message']['content']) && is_array($data['message']['content'])) {
+            $content = [];
+            foreach ($data['message']['content'] as $block) {
+                if (! is_array($block)) {
+                    continue;
+                }
+
+                $parsedBlock = $this->parseContentBlock($block);
+                if ($parsedBlock !== null) {
+                    $content[] = $parsedBlock;
+                }
+            }
+
+            return new UserMessage($content);
+        }
+
+        // Fall back to simple string content for backward compatibility
         return new UserMessage($data['content'] ?? '');
     }
 

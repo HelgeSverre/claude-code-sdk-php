@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Internal\Transport;
 
+use Closure;
+use Exception;
 use Generator;
 use HelgeSverre\ClaudeCode\Contracts\TransportInterface;
 use HelgeSverre\ClaudeCode\Exceptions\CLIConnectionException;
@@ -12,6 +14,7 @@ use HelgeSverre\ClaudeCode\Exceptions\CLINotFoundException;
 use HelgeSverre\ClaudeCode\Exceptions\ProcessException;
 use HelgeSverre\ClaudeCode\Internal\MessageParser;
 use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
+use JsonException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -25,15 +28,13 @@ class SubprocessCLITransport implements TransportInterface
 
     protected ?Process $process = null;
 
-    protected MessageParser $messageParser;
-
     public function __construct(
         protected readonly string $prompt,
         protected readonly ClaudeCodeOptions $options,
         protected readonly ?string $cliPath = null,
-    ) {
-        $this->messageParser = new MessageParser;
-    }
+        protected readonly ?Closure $onRawMessage = null,
+        protected MessageParser $messageParser = new MessageParser,
+    ) {}
 
     public function connect(): void
     {
@@ -52,7 +53,7 @@ class SubprocessCLITransport implements TransportInterface
 
         try {
             $this->process->start();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($this->options->cwd && ! is_dir($this->options->cwd)) {
                 throw new CLIConnectionException(
                     "Working directory does not exist: {$this->options->cwd}",
@@ -87,6 +88,11 @@ class SubprocessCLITransport implements TransportInterface
         return $this->process !== null && $this->process->isRunning();
     }
 
+    /**
+     * @throws ProcessException
+     * @throws CLIJSONDecodeException
+     * @throws CLIConnectionException
+     */
     public function receiveMessages(): Generator
     {
         if (! $this->isConnected()) {
@@ -122,12 +128,16 @@ class SubprocessCLITransport implements TransportInterface
                     $jsonBuffer = '';
 
                     if (is_array($decoded)) {
+                        if ($this->onRawMessage !== null) {
+                            call_user_func($this->onRawMessage, $decoded);
+                        }
+
                         $message = $this->messageParser->parse($decoded);
                         if ($message !== null) {
                             yield $message;
                         }
                     }
-                } catch (\JsonException) {
+                } catch (JsonException) {
                     // Continue accumulating buffer
                 }
             }
