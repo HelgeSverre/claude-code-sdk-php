@@ -13,28 +13,6 @@ declare(strict_types=1);
 |
 */
 
-use Mockery\MockInterface;
-use Symfony\Component\Process\Process;
-
 uses(
     HelgeSverre\ClaudeCode\Tests\TestCase::class,
 )->in('Unit', 'Feature', 'Integration');
-
-/*
-|--------------------------------------------------------------------------
-| Functions
-|--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
-*/
-
-/**
- * @return MockInterface&Process
- */
-function mockProcess(): MockInterface
-{
-    return Mockery::mock(Process::class);
-}
