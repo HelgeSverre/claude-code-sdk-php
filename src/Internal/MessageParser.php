@@ -39,6 +39,7 @@ class MessageParser
      */
     protected function parseUserMessage(array $data): UserMessage
     {
+        $sessionId = $data['session_id'] ?? null;
 
         // Check if we have a nested message structure with content blocks
         if (isset($data['message']['content']) && is_array($data['message']['content'])) {
@@ -54,11 +55,11 @@ class MessageParser
                 }
             }
 
-            return new UserMessage($content);
+            return new UserMessage($content, $sessionId);
         }
 
         // Fall back to simple string content for backward compatibility
-        return new UserMessage($data['content'] ?? '');
+        return new UserMessage($data['content'] ?? '', $sessionId);
     }
 
     /**
@@ -67,6 +68,7 @@ class MessageParser
     protected function parseAssistantMessage(array $data): AssistantMessage
     {
         $content = [];
+        $sessionId = $data['session_id'] ?? null;
 
         // Handle wrapped message format
         $messageData = $data['message'] ?? $data;
@@ -84,7 +86,7 @@ class MessageParser
             }
         }
 
-        return new AssistantMessage($content);
+        return new AssistantMessage($content, $sessionId);
     }
 
     /**
@@ -107,20 +109,16 @@ class MessageParser
      */
     protected function parseResultMessage(array $data): ResultMessage
     {
-        // Parse session data
-        $session = null;
-        if (isset($data['session_id'])) {
-            $session = [
-                'id' => $data['session_id'],
-                'turns' => $data['num_turns'] ?? null,
-            ];
-        }
-
         return new ResultMessage(
-            cost: $data['total_cost_usd'] ?? null,
+            subtype: $data['subtype'] ?? '',
+            durationMs: $data['duration_ms'] ?? 0.0,
+            durationApiMs: $data['duration_api_ms'] ?? 0.0,
+            isError: $data['is_error'] ?? false,
+            numTurns: $data['num_turns'] ?? 0,
+            sessionId: $data['session_id'] ?? '',
+            totalCostUsd: $data['total_cost_usd'] ?? 0.0,
+            result: $data['result'] ?? null,
             usage: $data['usage'] ?? null,
-            model: null, // Model is not in result message
-            session: $session,
         );
     }
 

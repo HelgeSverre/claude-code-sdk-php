@@ -29,6 +29,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | List of tools that Claude Code is allowed to use.
+    | Available tools can be found in the Claude Code documentation.
+    |
+    | Full list of tools can be found here:
+    | >  https://docs.anthropic.com/en/docs/claude-code/settings#tools-available-to-claude
+    |
     | Example: ['Read', 'Write', 'Edit']
     |
     */

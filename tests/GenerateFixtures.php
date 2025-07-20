@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use HelgeSverre\ClaudeCode\Internal\Client;
-use HelgeSverre\ClaudeCode\Internal\Transport\SubprocessCLITransport;
+use HelgeSverre\ClaudeCode\Internal\Transport\ProcessBridge;
 use HelgeSverre\ClaudeCode\Types\ClaudeCodeOptions;
 
 function fixturePath($name): string
@@ -196,7 +196,7 @@ function captureMessages(string $prompt, ClaudeCodeOptions $options, string $out
     $capturedMessages = [];
 
     // Create transport with callback to capture raw messages
-    $transport = new SubprocessCLITransport(
+    $transport = new ProcessBridge(
         prompt: $prompt,
         options: $options,
         onRawMessage: function (array $decoded) use (&$capturedMessages) {

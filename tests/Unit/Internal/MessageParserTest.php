@@ -146,19 +146,23 @@ describe('parse result messages', function () {
     it('parses result message with all fields', function () {
         $data = [
             'type' => 'result',
+            'subtype' => 'success',
+            'duration_ms' => 2000.0,
+            'duration_api_ms' => 1500.0,
+            'is_error' => false,
+            'num_turns' => 5,
+            'session_id' => 'session-123',
             'total_cost_usd' => 0.05,
             'usage' => ['total' => 100],
-            'session_id' => 'session-123',
-            'num_turns' => 5,
         ];
 
         $message = $this->parser->parse($data);
 
         expect($message)->toBeInstanceOf(ResultMessage::class);
-        expect($message->cost)->toBe(0.05);
+        expect($message->totalCostUsd)->toBe(0.05);
         expect($message->usage)->toBe(['total' => 100]);
-        expect($message->model)->toBeNull();
-        expect($message->session)->toBe(['id' => 'session-123', 'turns' => 5]);
+        expect($message->sessionId)->toBe('session-123');
+        expect($message->numTurns)->toBe(5);
     });
 
     it('handles null values', function () {
@@ -166,10 +170,10 @@ describe('parse result messages', function () {
         $message = $this->parser->parse($data);
 
         expect($message)->toBeInstanceOf(ResultMessage::class);
-        expect($message->cost)->toBeNull();
+        expect($message->totalCostUsd)->toBe(0.0);
         expect($message->usage)->toBeNull();
-        expect($message->model)->toBeNull();
-        expect($message->session)->toBeNull();
+        expect($message->sessionId)->toBe('');
+        expect($message->numTurns)->toBe(0);
     });
 });
 

@@ -11,6 +11,7 @@ class AssistantMessage extends Message
      */
     public function __construct(
         public readonly array $content,
+        public readonly ?string $sessionId = null,
     ) {
         parent::__construct('assistant');
     }

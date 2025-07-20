@@ -11,6 +11,7 @@ class UserMessage extends Message
      */
     public function __construct(
         public readonly string|array $content,
+        public readonly ?string $sessionId = null,
     ) {
         parent::__construct('user');
     }

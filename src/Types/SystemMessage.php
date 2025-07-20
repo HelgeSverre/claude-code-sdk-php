@@ -7,7 +7,15 @@ namespace HelgeSverre\ClaudeCode\Types;
 class SystemMessage extends Message
 {
     /**
-     * @param array<string, mixed> $data
+     * @param array{
+     *     apiKeySource?: string,
+     *     cwd?: string,
+     *     session_id?: string,
+     *     tools?: array<string>,
+     *     mcp_servers?: array{name: string, status: string}[],
+     *     model?: string,
+     *     permissionMode?: string
+     * } $data
      */
     public function __construct(
         public readonly string $subtype,

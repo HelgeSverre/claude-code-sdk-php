@@ -218,7 +218,7 @@ describe('Comprehensive Fixture Parsing', function () {
                     })(),
                     'result' => (function () use ($message, $raw) {
                         if (isset($raw['total_cost_usd'])) {
-                            expect($message->cost)->toBe($raw['total_cost_usd']);
+                            expect($message->totalCostUsd)->toBe($raw['total_cost_usd']);
                         }
                         if (isset($raw['usage'])) {
                             expect($message->usage)->toBe($raw['usage']);
@@ -265,7 +265,7 @@ describe('Specific Fixture Scenarios', function () {
 
         // Last should be result
         expect($messages[2])->toBeInstanceOf(ResultMessage::class);
-        expect($messages[2]->cost)->toBeGreaterThan(0);
+        expect($messages[2]->totalCostUsd)->toBeGreaterThan(0);
     });
 
     it('handles tool errors with user feedback correctly', function () {

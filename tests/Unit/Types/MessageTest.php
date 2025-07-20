@@ -53,30 +53,44 @@ describe('SystemMessage', function () {
 
 describe('ResultMessage', function () {
     it('creates result message with all properties', function () {
-        $usage = ['total' => 100, 'promptCachingStats' => ['read' => 50]];
-        $session = ['id' => 'session-123', 'turns' => 5];
+        $usage = ['input_tokens' => 100, 'output_tokens' => 50];
 
         $message = new ResultMessage(
-            cost: 0.05,
+            subtype: 'success',
+            durationMs: 2000.0,
+            durationApiMs: 1500.0,
+            isError: false,
+            numTurns: 5,
+            sessionId: 'session-123',
+            totalCostUsd: 0.05,
+            result: 'Task completed',
             usage: $usage,
-            model: 'claude-3-sonnet',
-            session: $session,
         );
 
         expect($message->type)->toBe('result');
-        expect($message->cost)->toBe(0.05);
+        expect($message->subtype)->toBe('success');
+        expect($message->totalCostUsd)->toBe(0.05);
         expect($message->usage)->toBe($usage);
-        expect($message->model)->toBe('claude-3-sonnet');
-        expect($message->session)->toBe($session);
+        expect($message->sessionId)->toBe('session-123');
+        expect($message->numTurns)->toBe(5);
+        expect($message->result)->toBe('Task completed');
     });
 
-    it('creates result message with null properties', function () {
-        $message = new ResultMessage;
+    it('creates result message with minimal properties', function () {
+        $message = new ResultMessage(
+            subtype: 'error_max_turns',
+            durationMs: 1000.0,
+            durationApiMs: 500.0,
+            isError: true,
+            numTurns: 10,
+            sessionId: 'test-session',
+            totalCostUsd: 0.0,
+        );
 
         expect($message->type)->toBe('result');
-        expect($message->cost)->toBeNull();
+        expect($message->subtype)->toBe('error_max_turns');
+        expect($message->isError)->toBe(true);
+        expect($message->result)->toBeNull();
         expect($message->usage)->toBeNull();
-        expect($message->model)->toBeNull();
-        expect($message->session)->toBeNull();
     });
 });

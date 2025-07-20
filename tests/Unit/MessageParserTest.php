@@ -218,17 +218,21 @@ describe('Result Messages', function () {
         $message = $this->parser->parse($data);
 
         expect($message)->toBeInstanceOf(ResultMessage::class);
-        expect($message->cost)->toBe(0.2872635);
         expect($message->usage)->toBe($data['usage']);
-        expect($message->session)->toBe([
-            'id' => '1246fb82-9cde-49bc-b96c-8cd2d3e05c62',
-            'turns' => 1,
-        ]);
+        expect($message->totalCostUsd)->toBe(0.2872635);
+        expect($message->sessionId)->toBe('1246fb82-9cde-49bc-b96c-8cd2d3e05c62');
+        expect($message->numTurns)->toBe(1);
     });
 
     it('handles missing session data gracefully', function () {
         $data = [
             'type' => 'result',
+            'subtype' => 'success',
+            'duration_ms' => 1000.0,
+            'duration_api_ms' => 500.0,
+            'is_error' => false,
+            'num_turns' => 1,
+            'session_id' => '',
             'total_cost_usd' => 0.15,
             'usage' => ['input_tokens' => 10, 'output_tokens' => 20],
         ];
@@ -236,8 +240,8 @@ describe('Result Messages', function () {
         $message = $this->parser->parse($data);
 
         expect($message)->toBeInstanceOf(ResultMessage::class);
-        expect($message->cost)->toBe(0.15);
-        expect($message->session)->toBeNull();
+        expect($message->totalCostUsd)->toBe(0.15);
+        expect($message->sessionId)->toBe('');
     });
 });
 
