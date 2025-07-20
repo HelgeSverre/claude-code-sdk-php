@@ -12,3 +12,4 @@ coverage/
 .env
 .env.local
 .env.*.local
+test.txt
