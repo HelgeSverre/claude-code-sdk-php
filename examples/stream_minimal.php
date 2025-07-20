@@ -84,9 +84,10 @@ function streamMessages(Generator $messages): void
             }, $message->content),
 
             $message instanceof ResultMessage => printf(
-                "\033[35m(DONE)\033[0m $%.4f • %d tokens\n\n",
-                $message->cost ?? 0,
+                "\033[35m(DONE)\033[0m $%.4f • %d tokens • %.2fs\n\n",
+                $message->totalCostUsd,
                 ($message->usage['input_tokens'] ?? 0) + ($message->usage['output_tokens'] ?? 0),
+                $message->durationMs / 1000,
             ),
 
             default => null
