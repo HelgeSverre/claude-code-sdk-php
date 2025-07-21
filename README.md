@@ -3,8 +3,9 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 [![Total Downloads](https://img.shields.io/packagist/dt/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 
-A type-safe PHP SDK for [Claude Code](https://github.com/anthropics/claude-code), providing seamless integration with
-Anthropic's AI coding assistant.
+PHP wrapper for [Claude Code](https://github.com/anthropics/claude-code) - Anthropic's AI coding assistant CLI. Built by porting the official Python SDK to PHP using Claude Code itself. 🤖
+
+This SDK lets you integrate Claude's coding capabilities directly into your PHP applications. Stream responses, track costs, intercept events, and more.
 
 ## Features
 
