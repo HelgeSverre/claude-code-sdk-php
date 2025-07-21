@@ -3,9 +3,9 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 [![Total Downloads](https://img.shields.io/packagist/dt/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 
-Wrapper for [Claude Code](https://github.com/anthropics/claude-code) - Anthropic's AI coding assistant CLI. Built by porting the official Python SDK using Claude Code itself. 🤖
+PHP wrapper for [Claude Code](https://github.com/anthropics/claude-code). Fun fact: This SDK was built by using Claude Code to port its own Python SDK to PHP. 🤖
 
-This SDK lets you integrate Claude's coding capabilities directly into your applications. Stream responses, track costs, intercept events, and more.
+Stream Claude's responses, track token usage, hook into events, and integrate AI coding assistance into your PHP apps.
 
 ## Installation
 
@@ -469,51 +469,6 @@ try {
     echo "Process failed with exit code {$e->exitCode}: {$e->stderr}";
 }
 ```
-
-## Testing
-
-Run the test suite:
-
-```bash
-composer test
-```
-
-Run tests with coverage:
-
-```bash
-composer test:coverage
-
-# Using herd 
-herd coverage ./vendor/bin/pest --type-coverage
-herd coverage ./vendor/bin/pest --coverage
-```
-
-Run static analysis:
-
-```bash
-composer analyse
-```
-
-Format code:
-
-```bash
-composer format
-```
-
-Check code formatting:
-
-```bash
-composer format:check
-```
-
-## Contributing
-
-Contributions are welcome! Please ensure:
-
-1. All tests pass
-2. Code follows Laravel coding standards (using Pint)
-3. Static analysis passes (PHPStan level 5)
-4. New features include tests
 
 ## License
 
