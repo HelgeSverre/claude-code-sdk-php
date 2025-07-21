@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use HelgeSverre\ClaudeCode\ClaudeCode;
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
@@ -84,7 +84,7 @@ echo str_repeat('-', 80) . "\n\n";
 // Example 2: With custom options
 echo "=== Example 2: Custom Configuration ===\n\n";
 
-$options = new ClaudeCodeOptions(
+$options = new Options(
     systemPrompt: 'You are a helpful coding assistant. Be concise.',
     maxTurns: 3,
 );
@@ -105,7 +105,7 @@ echo str_repeat('-', 80) . "\n\n";
 // Example 3: File operations with tools
 echo "=== Example 3: File Operations ===\n\n";
 
-$options = new ClaudeCodeOptions(
+$options = new Options(
     allowedTools: ['Read', 'Write', 'Edit'],
     permissionMode: PermissionMode::acceptEdits,
     cwd: sys_get_temp_dir(),
