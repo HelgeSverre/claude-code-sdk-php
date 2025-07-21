@@ -6,8 +6,7 @@ namespace HelgeSverre\ClaudeCode\Laravel\Facades;
 
 use Generator;
 use HelgeSverre\ClaudeCode\Laravel\ClaudeCodeManager;
-use HelgeSverre\ClaudeCode\Laravel\ClaudeCodeOptionsBuilder;
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
 use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
 use HelgeSverre\ClaudeCode\Types\Messages\SystemMessage;
@@ -15,8 +14,8 @@ use HelgeSverre\ClaudeCode\Types\Messages\UserMessage;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static Generator<UserMessage|AssistantMessage|SystemMessage|ResultMessage> query(string $prompt, ?ClaudeCodeOptions $options = null)
- * @method static ClaudeCodeOptionsBuilder options()
+ * @method static Generator<UserMessage|AssistantMessage|SystemMessage|ResultMessage> query(string $prompt, ?Options $options = null)
+ * @method static Options options()
  *
  * @see ClaudeCodeManager
  */

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Types\Config;
 
+/**
+ * Holds initialization data from Claude Code system messages.
+ */
 readonly class SystemInitData
 {
     /**

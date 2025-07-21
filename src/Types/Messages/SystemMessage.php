@@ -6,6 +6,9 @@ namespace HelgeSverre\ClaudeCode\Types\Messages;
 
 use HelgeSverre\ClaudeCode\Types\Config\SystemInitData;
 
+/**
+ * Represents a system message from the Claude Code CLI.
+ */
 readonly class SystemMessage
 {
     public function __construct(

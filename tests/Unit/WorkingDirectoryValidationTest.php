@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use HelgeSverre\ClaudeCode\ClaudeCode;
 use HelgeSverre\ClaudeCode\Exceptions\CLIConnectionException;
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 
 it('throws exception when working directory does not exist', function () {
-    $options = new ClaudeCodeOptions(
+    $options = new Options(
         allowedTools: ['Read'],
         cwd: '/nonexistent/path/that/should/not/exist',
     );
@@ -23,7 +23,7 @@ it('accepts valid working directory', function () {
     mkdir($tempDir);
 
     try {
-        $options = new ClaudeCodeOptions(
+        $options = new Options(
             allowedTools: ['Read'],
             maxTurns: 1,
             cwd: $tempDir,
@@ -47,7 +47,7 @@ it('validates working directory before start', function () {
 
     expect($testDir)->not->toBeDirectory();
 
-    $options = new ClaudeCodeOptions(
+    $options = new Options(
         allowedTools: ['Write'],
         maxTurns: 1,
         cwd: $testDir,

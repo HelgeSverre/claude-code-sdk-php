@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Laravel;
 
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,10 +20,10 @@ class ClaudeCodeServiceProvider extends ServiceProvider
             'claude-code',
         );
 
-        $this->app->singleton(ClaudeCodeOptions::class, function ($app) {
+        $this->app->singleton(Options::class, function ($app) {
             $config = $app['config']['claude-code'];
 
-            return new ClaudeCodeOptions(
+            return new Options(
                 systemPrompt: $config['system_prompt'] ?? null,
                 appendSystemPrompt: $config['append_system_prompt'] ?? null,
                 allowedTools: $config['allowed_tools'] ?? null,
@@ -42,33 +42,24 @@ class ClaudeCodeServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('claude-code', function ($app) {
-            return new class($app[ClaudeCodeOptions::class])
+            $defaultOptions = $app[Options::class];
+
+            return new class($defaultOptions)
             {
-                public function __construct(
-                    private ClaudeCodeOptions $defaultOptions,
-                ) {}
+                public function __construct(private Options $defaultOptions) {}
 
-                public function query(string $prompt, ?ClaudeCodeOptions $options = null): \Generator
+                public function query(string $prompt, ?Options $options = null): \Generator
                 {
-                    putenv('CLAUDE_CODE_ENTRYPOINT=sdk-php');
+                    $finalOptions = $options
+                        ? (clone $options)->mergeDefaults($this->defaultOptions)
+                        : clone $this->defaultOptions;
 
-                    $options ??= $this->defaultOptions;
-                    $transport = new \HelgeSverre\ClaudeCode\Internal\ProcessBridge($prompt, $options);
-
-                    try {
-                        $transport->connect();
-
-                        foreach ($transport->receiveMessages() as $message) {
-                            yield $message;
-                        }
-                    } finally {
-                        $transport->disconnect();
-                    }
+                    return \HelgeSverre\ClaudeCode\ClaudeCode::query($prompt, $finalOptions);
                 }
 
-                public function options(): ClaudeCodeOptionsBuilder
+                public function options(): Options
                 {
-                    return new ClaudeCodeOptionsBuilder($this->defaultOptions);
+                    return clone $this->defaultOptions;
                 }
             };
         });
@@ -95,7 +86,7 @@ class ClaudeCodeServiceProvider extends ServiceProvider
     {
         return [
             'claude-code',
-            ClaudeCodeOptions::class,
+            Options::class,
         ];
     }
 }

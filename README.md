@@ -77,13 +77,13 @@ foreach ($messages as $message) {
 
 ```php
 use HelgeSverre\ClaudeCode\ClaudeCode;
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 use HelgeSverre\ClaudeCode\Types\Enums\PermissionMode;
 
-$options = new ClaudeCodeOptions(
+$options = new Options(
     systemPrompt: "You are a helpful coding assistant",
     allowedTools: ['Read', 'Write', 'Edit'],
-    permissionMode: PermissionMode::ACCEPT_EDITS,
+    permissionMode: PermissionMode::acceptEdits,
     maxTurns: 5,
 );
 
@@ -110,7 +110,9 @@ foreach ($messages as $message) {
 
 ```
 
-## Laravel Integration
+----
+
+## Usage in Laravel
 
 ### Configuration
 
@@ -141,8 +143,7 @@ $messages = ClaudeCode::query("Create a new Laravel controller");
 $options = ClaudeCode::options()
     ->systemPrompt("You are a Laravel expert")
     ->allowedTools(['Read', 'Write', 'Edit'])
-    ->maxTurns(10)
-    ->build();
+    ->maxTurns(10);
 
 $messages = ClaudeCode::query("Help me build a REST API", $options);
 ```
@@ -174,12 +175,12 @@ class MyService
 
 ## Configuration Options
 
-### ClaudeCodeOptions
+### Options
 
 All configuration options available:
 
 ```php
-$options = new ClaudeCodeOptions(
+$options = new Options(
     // System prompt to set context
     systemPrompt: "You are a helpful assistant",
     
@@ -193,7 +194,7 @@ $options = new ClaudeCodeOptions(
     disallowedTools: ['Delete'],
     
     // Permission handling mode
-    permissionMode: PermissionMode::ACCEPT_EDITS,
+    permissionMode: PermissionMode::acceptEdits,
     
     // Custom permission prompt tool
     permissionPromptToolName: "MyCustomPrompt",
@@ -312,7 +313,7 @@ use HelgeSverre\ClaudeCode\Types\ServerConfigs\StdioServerConfig;
 use HelgeSverre\ClaudeCode\Types\ServerConfigs\SSEServerConfig;
 use HelgeSverre\ClaudeCode\Types\ServerConfigs\HTTPServerConfig;
 
-$options = new ClaudeCodeOptions(
+$options = new Options(
     mcpServers: [
         // Stdio server
         'filesystem' => new StdioServerConfig(

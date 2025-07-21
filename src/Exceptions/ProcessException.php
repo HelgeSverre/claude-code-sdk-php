@@ -6,6 +6,9 @@ namespace HelgeSverre\ClaudeCode\Exceptions;
 
 use Throwable;
 
+/**
+ * Exception thrown when the Claude Code CLI process exits with an error.
+ */
 class ProcessException extends ClaudeSDKException
 {
     public function __construct(

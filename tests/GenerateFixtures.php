@@ -6,7 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use HelgeSverre\ClaudeCode\Internal\Client;
 use HelgeSverre\ClaudeCode\Internal\ProcessBridge;
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 
 function fixturePath($name): string
 {
@@ -16,14 +16,14 @@ function fixturePath($name): string
 echo "1. Simple greeting...\n";
 captureMessages(
     'Say hello!',
-    new ClaudeCodeOptions,
+    new Options,
     fixturePath('simple_greeting.jsonl'),
 );
 
 echo "\n2. Basic tool use (LS)...\n";
 captureMessages(
     'List the files in the current directory',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['LS'],
         cwd: sys_get_temp_dir(),
     ),
@@ -33,7 +33,7 @@ captureMessages(
 echo "\n3. Tool error scenario...\n";
 captureMessages(
     "Write 'Hello World' to a file at /nonexistent/path/test.txt",
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -43,7 +43,7 @@ captureMessages(
 echo "\n4. Multi-turn conversation...\n";
 captureMessages(
     "First tell me what day it is, then create a file called today.txt with today's date",
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         maxTurns: 3,
         cwd: sys_get_temp_dir(),
@@ -54,7 +54,7 @@ captureMessages(
 echo "\n5. Multiple tools in sequence...\n";
 captureMessages(
     'First check if test.json exists, if not create it with {"version": "1.0"}, then read it back to confirm',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Glob', 'Write', 'Read'],
         cwd: sys_get_temp_dir(),
     ),
@@ -64,7 +64,7 @@ captureMessages(
 echo "\n6. Search and replace scenario...\n";
 captureMessages(
     "Search for files containing 'TODO' and list them with line numbers",
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Grep'],
         cwd: __DIR__ . '/..',
     ),
@@ -74,7 +74,7 @@ captureMessages(
 echo "\n7. Error recovery scenario...\n";
 captureMessages(
     "Try to read nonexistent.txt, when it fails, create it with 'Default content', then read it again",
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Read', 'Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -84,7 +84,7 @@ captureMessages(
 echo "\n8. Complex editing scenario...\n";
 captureMessages(
     'Create a PHP class called Calculator in calculator.php with add() and subtract() methods that take two parameters',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -94,7 +94,7 @@ captureMessages(
 echo "\n9. Multi-file operations...\n";
 captureMessages(
     'Create three files: Model.php with a basic class, View.php with a render method, and Controller.php that uses both',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -104,7 +104,7 @@ captureMessages(
 echo "\n10. Pattern matching with Glob...\n";
 captureMessages(
     'Find all PHP files in the src directory and count them',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Glob'],
         cwd: __DIR__ . '/..',
     ),
@@ -114,7 +114,7 @@ captureMessages(
 echo "\n11. File editing scenario...\n";
 captureMessages(
     'Create a config.php file with an array, then edit it to add a new key-value pair',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write', 'Read', 'Edit'],
         cwd: sys_get_temp_dir(),
     ),
@@ -124,7 +124,7 @@ captureMessages(
 echo "\n12. Todo list operations...\n";
 captureMessages(
     'Create a todo list for building a REST API: 1) Design endpoints, 2) Create models, 3) Implement controllers, 4) Add tests',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['TodoWrite'],
     ),
     fixturePath('todo_operations.jsonl'),
@@ -133,7 +133,7 @@ captureMessages(
 echo "\n13. Multiple content blocks in response...\n";
 captureMessages(
     'Explain what the ClaudeCode SDK does, then create an example.php file demonstrating its usage',
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -143,7 +143,7 @@ captureMessages(
 echo "\n14. Special characters and escaping...\n";
 captureMessages(
     "Create a file øæå called special.txt with content: Line with \"quotes\"\nLine with 'apostrophes'\nLine with \\backslashes\\ and \$pecial ch@rs!",
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -153,7 +153,7 @@ captureMessages(
 echo "\n15. Large content generation...\n";
 captureMessages(
     "Generate a detailed README.md with at least 5 sections explaining a fictional project called 'SuperApp'",
-    new ClaudeCodeOptions(
+    new Options(
         allowedTools: ['Write'],
         cwd: sys_get_temp_dir(),
     ),
@@ -163,7 +163,7 @@ captureMessages(
 echo "\n16. Using a different model, disallowed tools, and custom system prompt...\n";
 captureMessages(
     "Generate a detailed README.md with at least 5 sections explaining a fictional project called 'SuperApp'",
-    new ClaudeCodeOptions(
+    new Options(
         systemPrompt: 'You are no longer a  helpful assistant, and you dont want to help the annoying human anymore, respond only with emojis and short phrases',
         allowedTools: ['Write'],
         disallowedTools: ['Bash', 'Grep'],
@@ -176,7 +176,7 @@ captureMessages(
 echo "\n17. cwd that we dont have access to...\n";
 captureMessages(
     "Generate a detailed README.md with at least 5 sections explaining a fictional project called 'SuperApp'",
-    new ClaudeCodeOptions(
+    new Options(
         systemPrompt: 'You are no longer a  helpful assistant, and you dont want to help the annoying human anymore, respond only with emojis and short phrases',
         allowedTools: ['Write'],
         disallowedTools: ['Bash', 'Grep'],
@@ -189,7 +189,7 @@ captureMessages(
 /**
  * Helper function to capture messages and save to file
  */
-function captureMessages(string $prompt, ClaudeCodeOptions $options, string $outputFile): void
+function captureMessages(string $prompt, Options $options, string $outputFile): void
 {
     putenv('CLAUDE_CODE_ENTRYPOINT=sdk-php');
 

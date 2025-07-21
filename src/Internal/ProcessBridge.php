@@ -11,7 +11,7 @@ use HelgeSverre\ClaudeCode\Exceptions\CLIConnectionException;
 use HelgeSverre\ClaudeCode\Exceptions\CLIJSONDecodeException;
 use HelgeSverre\ClaudeCode\Exceptions\CLINotFoundException;
 use HelgeSverre\ClaudeCode\Exceptions\ProcessException;
-use HelgeSverre\ClaudeCode\Types\Config\ClaudeCodeOptions;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
 use JsonException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -22,9 +22,11 @@ class ProcessBridge
 
     protected ?Process $process = null;
 
+    protected ?string $mcpConfigTempFile = null;
+
     public function __construct(
         protected readonly string $prompt,
-        protected readonly ClaudeCodeOptions $options,
+        protected readonly Options $options,
         protected readonly ?string $cliPath = null,
         protected readonly ?Closure $onRawMessage = null,
         protected MessageParser $messageParser = new MessageParser,
@@ -48,18 +50,17 @@ class ProcessBridge
         $this->process = new Process(
             command: $command,
             cwd: $this->options->cwd,
-            env: array_merge($_ENV, ['CLAUDE_CODE_ENTRYPOINT' => 'sdk-php']),
+            env: array_merge($_ENV, [
+                'CLAUDE_CODE_ENTRYPOINT' => 'sdk-php',
+            ]),
             timeout: null,
         );
 
         try {
             $this->process->start();
         } catch (Exception $e) {
-            throw new CLIConnectionException(
-                "Failed to start Claude Code: {$e->getMessage()}",
-                0,
-                $e,
-            );
+            // TODO: rethrow loses context?
+            throw new CLIConnectionException("Failed to start Claude Code: {$e->getMessage()}", 0, $e);
         }
     }
 
@@ -74,6 +75,12 @@ class ProcessBridge
         }
 
         $this->process = null;
+
+        // Clean up temporary MCP config file
+        if ($this->mcpConfigTempFile !== null && file_exists($this->mcpConfigTempFile)) {
+            unlink($this->mcpConfigTempFile);
+            $this->mcpConfigTempFile = null;
+        }
     }
 
     public function isConnected(): bool
@@ -225,10 +232,19 @@ class ProcessBridge
         }
 
         if ($this->options->mcpServers !== null) {
+            // Write MCP config to temporary file
+            $mcpConfig = ['mcpServers' => $this->options->toArray()['mcpServers']];
+            $tempFile = tempnam(sys_get_temp_dir(), 'claude_mcp_') . '.json';
+            file_put_contents($tempFile, json_encode($mcpConfig, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+
+            // Store temp file path for cleanup
+            $this->mcpConfigTempFile = $tempFile;
+
             $cmd[] = '--mcp-config';
-            $cmd[] = json_encode(['mcpServers' => $this->options->toArray()['mcpServers']], JSON_THROW_ON_ERROR);
+            $cmd[] = $tempFile;
         }
 
+        // $cmd[] = '--debug';
         $cmd[] = '--print';
         $cmd[] = $this->prompt;
 

@@ -107,7 +107,7 @@ echo "=== Example 3: File Operations ===\n\n";
 
 $options = new ClaudeCodeOptions(
     allowedTools: ['Read', 'Write', 'Edit'],
-    permissionMode: PermissionMode::ACCEPT_EDITS,
+    permissionMode: PermissionMode::acceptEdits,
     cwd: sys_get_temp_dir(),
 );
 

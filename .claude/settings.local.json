@@ -8,7 +8,9 @@
       "Bash(php:*)",
       "Bash(./vendor/bin/phpunit)",
       "Bash(./vendor/bin/pest)",
-      "Bash(./vendor/bin/pest:*)"
+      "Bash(./vendor/bin/pest:*)",
+      "Bash(grep:*)",
+      "Bash(vendor/bin/pest:*)"
     ],
     "deny": []
   }

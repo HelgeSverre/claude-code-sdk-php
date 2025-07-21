@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Types\ContentBlocks;
 
+/**
+ * Represents a tool execution result content block.
+ */
 readonly class ToolResultBlock
 {
     /**

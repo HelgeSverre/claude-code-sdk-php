@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace HelgeSverre\ClaudeCode\Types\Messages;
 
+/**
+ * Represents the final result message at the end of a Claude Code session.
+ */
 readonly class ResultMessage
 {
     /**
-     * @param string $subtype 'success' | 'error_max_turns' | 'error_during_execution'
      * @param array{
      *     input_tokens?: int,
      *     output_tokens?: int,
