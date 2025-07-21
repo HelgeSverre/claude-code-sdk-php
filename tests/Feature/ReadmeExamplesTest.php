@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\ClaudeCode;
 use HelgeSverre\ClaudeCode\Exceptions\CLIConnectionException;
 use HelgeSverre\ClaudeCode\Exceptions\CLINotFoundException;
 use HelgeSverre\ClaudeCode\Exceptions\ProcessException;

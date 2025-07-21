@@ -289,7 +289,7 @@ describe('Content Block Parsing', function () {
     it('parses text blocks', function () {
         $block = ['type' => 'text', 'text' => 'Hello world'];
 
-        $parsed = (new \ReflectionMethod($this->parser, 'parseContentBlock'))
+        $parsed = (new ReflectionMethod($this->parser, 'parseContentBlock'))
             ->invoke($this->parser, $block);
 
         expect($parsed)->toBeInstanceOf(TextBlock::class);
@@ -304,7 +304,7 @@ describe('Content Block Parsing', function () {
             'input' => ['file_path' => 'test.txt'],
         ];
 
-        $parsed = (new \ReflectionMethod($this->parser, 'parseContentBlock'))
+        $parsed = (new ReflectionMethod($this->parser, 'parseContentBlock'))
             ->invoke($this->parser, $block);
 
         expect($parsed)->toBeInstanceOf(ToolUseBlock::class);
@@ -321,7 +321,7 @@ describe('Content Block Parsing', function () {
             'is_error' => false,
         ];
 
-        $parsed = (new \ReflectionMethod($this->parser, 'parseContentBlock'))
+        $parsed = (new ReflectionMethod($this->parser, 'parseContentBlock'))
             ->invoke($this->parser, $block);
 
         expect($parsed)->toBeInstanceOf(ToolResultBlock::class);
@@ -333,7 +333,7 @@ describe('Content Block Parsing', function () {
     it('returns null for unknown block type', function () {
         $block = ['type' => 'unknown'];
 
-        $parsed = (new \ReflectionMethod($this->parser, 'parseContentBlock'))
+        $parsed = (new ReflectionMethod($this->parser, 'parseContentBlock'))
             ->invoke($this->parser, $block);
 
         expect($parsed)->toBeNull();

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use HelgeSverre\ClaudeCode\Types\Config\MCPServerConfig;
+use HelgeSverre\ClaudeCode\Types\Config\MCPServerInfo;
 use HelgeSverre\ClaudeCode\Types\Config\Options;
+use HelgeSverre\ClaudeCode\Types\Config\SystemInitData;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolResultBlock;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\ToolUseBlock;
@@ -64,13 +66,13 @@ it('simulates querying FilamentPHP documentation via Context7 MCP server', funct
     $mockMessages = [
         new SystemMessage(
             'init',
-            new \HelgeSverre\ClaudeCode\Types\Config\SystemInitData(
+            new SystemInitData(
                 apiKeySource: 'environment',
                 cwd: '/test',
                 sessionId: 'test-session',
                 tools: ['context7_search', 'context7_get_document'],
                 mcpServers: [
-                    new \HelgeSverre\ClaudeCode\Types\Config\MCPServerInfo(
+                    new MCPServerInfo(
                         name: 'context7',
                         status: 'connected',
                     ),

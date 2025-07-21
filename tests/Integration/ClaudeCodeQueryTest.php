@@ -97,7 +97,7 @@ it('performs a real query to Claude Code and processes the response', function (
         echo 'Exit Code: ' . $e->exitCode . "\n";
         echo 'STDERR: ' . $e->stderr . "\n";
         throw $e;
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "\nException: " . $e->getMessage() . "\n";
         echo 'Trace: ' . $e->getTraceAsString() . "\n";
         throw $e;
@@ -218,7 +218,7 @@ it('handles file system queries with proper tool usage', function () {
         // a system init message, not an assistant message or a result message.
         // This test now only verifies that we can connect to the CLI and receive the init message.
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "\nException: " . $e->getMessage() . "\n";
         echo 'Trace: ' . $e->getTraceAsString() . "\n";
         throw $e;
@@ -276,7 +276,7 @@ it('tests MCP server with filesystem server', function () {
             $bridge->connect();
             echo "\nSuccessfully connected to MCP filesystem server\n";
             $bridge->disconnect();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo "\nCould not connect to MCP filesystem server: " . $e->getMessage() . "\n";
             // Don't rethrow the exception, just log it
         }
@@ -284,7 +284,7 @@ it('tests MCP server with filesystem server', function () {
         // Test passes if we got this far without exceptions
         expect(true)->toBeTrue();
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "\nException: " . $e->getMessage() . "\n";
         echo 'Trace: ' . $e->getTraceAsString() . "\n";
         throw $e;
@@ -337,7 +337,7 @@ it('tests MCP server with everything server', function () {
             $bridge->connect();
             echo "\nSuccessfully connected to MCP everything server\n";
             $bridge->disconnect();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo "\nCould not connect to MCP everything server: " . $e->getMessage() . "\n";
             // Don't rethrow the exception, just log it
         }
@@ -345,7 +345,7 @@ it('tests MCP server with everything server', function () {
         // Test passes if we got this far without exceptions
         expect(true)->toBeTrue();
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "\nException: " . $e->getMessage() . "\n";
         echo 'Trace: ' . $e->getTraceAsString() . "\n";
         throw $e;

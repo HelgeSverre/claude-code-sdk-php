@@ -213,7 +213,7 @@ describe('MCPServerConfig::fromArray', function () {
 describe('JSON Parsing Edge Cases', function () {
     it('throws JsonException for invalid JSON', function () {
         expect(fn () => MCPServerConfig::fromJson('{"invalid": json}'))
-            ->toThrow(\JsonException::class);
+            ->toThrow(JsonException::class);
     });
 
     it('skips non-array server configs in fromJson', function () {

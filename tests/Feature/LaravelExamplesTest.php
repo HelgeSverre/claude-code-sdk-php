@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-use HelgeSverre\ClaudeCode\Laravel\Facades\ClaudeCode;
 use HelgeSverre\ClaudeCode\Types\Config\Options;
 use HelgeSverre\ClaudeCode\Types\ContentBlocks\TextBlock;
 use HelgeSverre\ClaudeCode\Types\Messages\AssistantMessage;
 use HelgeSverre\ClaudeCode\Types\Messages\ResultMessage;
-use Illuminate\Support\Facades\App;
 
 it('demonstrates Laravel facade usage from README', function () {
     // Test creating options using the fluent interface that would be available via the facade
