@@ -3,29 +3,11 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 [![Total Downloads](https://img.shields.io/packagist/dt/helgesverre/claude-code-sdk.svg?style=flat-square)](https://packagist.org/packages/helgesverre/claude-code-sdk)
 
-PHP wrapper for [Claude Code](https://github.com/anthropics/claude-code) - Anthropic's AI coding assistant CLI. Built by porting the official Python SDK to PHP using Claude Code itself. 🤖
+Wrapper for [Claude Code](https://github.com/anthropics/claude-code) - Anthropic's AI coding assistant CLI. Built by porting the official Python SDK using Claude Code itself. 🤖
 
-This SDK lets you integrate Claude's coding capabilities directly into your PHP applications. Stream responses, track costs, intercept events, and more.
-
-## Features
-
-- Fully typed messages, content blocks, and configuration options
-- Real-time message streaming with PHP generators
-- Laravel integration with service provider and facade
-- Model Context Protocol (MCP) server support (Stdio, SSE, HTTP)
-- Configurable tool permissions and session management
-- Cost and token usage tracking
-- Comprehensive test suite with fixture-based testing
-
-## Requirements
-
-- PHP 8.3 or higher
-- [Claude Code CLI](https://github.com/anthropics/claude-code) installed globally
-- Node.js (for Claude Code CLI)
+This SDK lets you integrate Claude's coding capabilities directly into your applications. Stream responses, track costs, intercept events, and more.
 
 ## Installation
-
-Install the SDK via Composer:
 
 ```bash
 composer require helgesverre/claude-code-sdk
@@ -339,11 +321,12 @@ $options = new Options(
 ```
 
 ## Interceptors
-> Note: This is **NOT** related to or the same as  [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks-guide)
+
+> Note: This is **NOT** related to or the same
+> as  [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks-guide)
 
 The SDK supports interceptors that allow you to tap into various events during the Claude Code lifecycle. This
 is useful for logging, monitoring, debugging, or building real-time UI updates.
-
 
 ### Available Hook Points
 
