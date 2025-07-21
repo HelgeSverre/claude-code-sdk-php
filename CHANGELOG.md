@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2025-01-20
+## [1.0.0] - 2025-01-21
 
 ### Initial Release
 
@@ -15,7 +15,7 @@ Circle of life, I guess.
 - Full support for Claude Code CLI interaction via subprocess
 - Strongly-typed message classes (System, User, Assistant, Result)
 - Typed content blocks (Text, ToolUse, ToolResult)
-- Comprehensive configuration options via `ClaudeCodeOptions`
+- Comprehensive configuration options via `Options` class
 - Laravel integration with service provider and facade
 - MCP (Model Context Protocol) server support (Stdio, SSE, HTTP)
 - Permission modes for tool usage control
@@ -23,6 +23,19 @@ Circle of life, I guess.
 - Comprehensive test suite with real fixture parsing
 - PHPStan level 5 static analysis
 - Laravel Pint code formatting
+
+#### Interceptor System
+- **Hook-based system** for tapping into Claude Code lifecycle events
+  - `onQueryStart` - Fired when a query begins with prompt and options
+  - `onRawMessage` - Fired when raw JSON is received from Claude Code CLI
+  - `onMessageParsed` - Fired after a message is parsed into typed objects
+  - `onQueryComplete` - Fired when query completes successfully
+  - `onError` - Fired when errors occur with full error details
+- **Example Interceptors** ready to use out of the box:
+  - `FileLoggerInterceptor` - Log all events to files with timestamps
+  - `MetricsInterceptor` - Track token usage, costs, and performance metrics
+  - `WebhookInterceptor` - Send events to HTTP endpoints
+  - `WebSocketInterceptor` - Stream events via WebSocket for real-time updates
 
 ### Features
 
@@ -41,3 +54,4 @@ Circle of life, I guess.
 - Inline PHPDoc comments
 - Laravel-specific integration guide
 - Architecture overview
+- Interceptor system documentation with usage examples
