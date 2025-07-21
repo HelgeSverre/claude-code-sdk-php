@@ -102,7 +102,7 @@ foreach ($messages as $message) {
 Publish the configuration file:
 
 ```bash
-@
+php artisan vendor:publish --tag=claude-code-config
 ```
 
 Configure your settings in `config/claude-code.php` or use environment variables:
