@@ -24,6 +24,7 @@ class Options
         public ?string $model = null,
         public ?string $cwd = null,
         public ?array $mcpServers = null, // array<string, MCPServerConfig>
+        public ?array $interceptors = null, // array<callable>
     ) {}
 
     public static function create(): self
@@ -114,6 +115,16 @@ class Options
     public function mcpServers(?array $mcpServers): self
     {
         $this->mcpServers = $mcpServers;
+
+        return $this;
+    }
+
+    /**
+     * @param array<callable>|null $interceptors
+     */
+    public function interceptors(?array $interceptors): self
+    {
+        $this->interceptors = $interceptors;
 
         return $this;
     }

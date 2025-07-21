@@ -337,6 +337,134 @@ $options = new Options(
 );
 ```
 
+## Interceptors
+> Note: This is **NOT** related to or the same as  [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks-guide)
+
+The SDK supports interceptors that allow you to tap into various events during the Claude Code lifecycle. This
+is useful for logging, monitoring, debugging, or building real-time UI updates.
+
+
+### Available Hook Points
+
+- `onQueryStart` - Fired when a query begins
+- `onRawMessage` - Fired when raw JSON is received from Claude Code CLI
+- `onMessageParsed` - Fired after a message is parsed into a typed object
+- `onQueryComplete` - Fired when the query completes successfully
+- `onError` - Fired when an error occurs
+
+### Basic Usage
+
+```php
+use HelgeSverre\ClaudeCode\ClaudeCode;
+use HelgeSverre\ClaudeCode\Types\Config\Options;
+
+// Simple logging interceptor
+$logger = function(string $event, mixed $data) {
+    echo "[{$event}] " . json_encode($data) . PHP_EOL;
+};
+
+$options = new Options(
+    interceptors: [$logger]
+);
+
+$messages = ClaudeCode::query("Help me code", $options);
+```
+
+### Example Interceptors
+
+#### File Logger
+
+```php
+use HelgeSverre\ClaudeCode\Examples\Interceptors\FileLoggerInterceptor;
+
+$options = new Options(
+    interceptors: [
+        new FileLoggerInterceptor('/tmp/claude.log')
+    ]
+);
+```
+
+#### Metrics Collector
+
+```php
+use HelgeSverre\ClaudeCode\Examples\Interceptors\MetricsInterceptor;
+
+$options = new Options(
+    interceptors: [
+        new MetricsInterceptor() // Tracks token usage, costs, and timing
+    ]
+);
+```
+
+#### Webhook Dispatcher
+
+```php
+use HelgeSverre\ClaudeCode\Examples\Interceptors\WebhookInterceptor;
+
+$options = new Options(
+    interceptors: [
+        new WebhookInterceptor('https://api.example.com/claude-events')
+    ]
+);
+```
+
+### Custom Interceptor
+
+```php
+// Token usage tracker
+$tokenTracker = function(string $event, mixed $data) use (&$totalTokens) {
+    if ($event === 'onMessageParsed' && $data['message'] instanceof ResultMessage) {
+        $totalTokens += $data['message']->usage['input_tokens'] ?? 0;
+        $totalTokens += $data['message']->usage['output_tokens'] ?? 0;
+    }
+};
+
+// Real-time progress indicator
+$progressTracker = function(string $event, mixed $data) {
+    switch ($event) {
+        case 'onQueryStart':
+            echo "Starting query: {$data['prompt']}\n";
+            break;
+        case 'onMessageParsed':
+            echo "."; // Progress dot for each message
+            break;
+        case 'onQueryComplete':
+            echo "\nQuery completed!\n";
+            break;
+    }
+};
+
+$options = new Options(
+    interceptors: [$tokenTracker, $progressTracker]
+);
+```
+
+### Laravel Integration
+
+```php
+// In a service provider
+$this->app->bind(Options::class, function ($app) {
+    $interceptors = [];
+    
+    // Add logging if enabled
+    if (config('claude-code.logging.enabled')) {
+        $interceptors[] = new FileLoggerInterceptor(
+            storage_path('logs/claude-code.log')
+        );
+    }
+    
+    // Add metrics collection
+    if (config('claude-code.metrics.enabled')) {
+        $interceptors[] = new MetricsInterceptor();
+    }
+    
+    return new Options(
+        interceptors: $interceptors,
+        // ... other options
+    );
+});
+```
+
 ## Error Handling
 
 The SDK provides specific exception types for different failure scenarios:

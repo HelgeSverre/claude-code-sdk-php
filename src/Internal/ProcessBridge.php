@@ -28,9 +28,20 @@ class ProcessBridge
         protected readonly string $prompt,
         protected readonly Options $options,
         protected readonly ?string $cliPath = null,
-        protected readonly ?Closure $onRawMessage = null,
+        protected ?Closure $onRawMessage = null,
         protected MessageParser $messageParser = new MessageParser,
-    ) {}
+    ) {
+        // Set up onRawMessage to trigger interceptors if not already set
+        if ($this->onRawMessage === null && $this->options->interceptors) {
+            $this->onRawMessage = function (array $raw) {
+                foreach ($this->options->interceptors as $interceptor) {
+                    if (is_callable($interceptor)) {
+                        $interceptor('onRawMessage', $raw);
+                    }
+                }
+            };
+        }
+    }
 
     public function connect(): void
     {
@@ -148,6 +159,18 @@ class ProcessBridge
 
                         $message = $this->messageParser->parse($decoded);
                         if ($message !== null) {
+                            // Trigger onMessageParsed hook
+                            if ($this->options->interceptors) {
+                                foreach ($this->options->interceptors as $interceptor) {
+                                    if (is_callable($interceptor)) {
+                                        $interceptor('onMessageParsed', [
+                                            'message' => $message,
+                                            'type' => get_class($message),
+                                            'timestamp' => microtime(true),
+                                        ]);
+                                    }
+                                }
+                            }
                             yield $message;
                         }
                     }

@@ -36,7 +36,8 @@
   },
   "autoload": {
     "psr-4": {
-      "HelgeSverre\\ClaudeCode\\": "src/"
+      "HelgeSverre\\ClaudeCode\\": "src/",
+      "HelgeSverre\\ClaudeCode\\Examples\\": "examples/"
     }
   },
   "autoload-dev": {
